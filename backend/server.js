@@ -23,11 +23,14 @@ app.use(express.json());
 
 // Database connection
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'parks_gardens',
-  password: process.env.DB_PASSWORD || 'password',
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  // Fallback to individual variables if DATABASE_URL not available
+  user: process.env.PGUSER || process.env.DB_USER || 'postgres',
+  host: process.env.PGHOST || process.env.DB_HOST || 'localhost',
+  database: process.env.PGDATABASE || process.env.DB_NAME || 'parks_gardens',
+  password: process.env.PGPASSWORD || process.env.DB_PASSWORD || 'password',
+  port: process.env.PGPORT || process.env.DB_PORT || 5432,
 });
 
 // Test database connection
