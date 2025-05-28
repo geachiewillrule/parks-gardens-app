@@ -340,6 +340,212 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+// Add these after your existing staff routes (around line 280)
+
+// Get single staff member by ID
+app.get('/api/staff/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const staff = await pool.query(`
+      SELECT id, name, email, role, crew_id, phone, created_at
+      FROM users 
+      WHERE id = $1
+    `, [id]);
+
+    if (staff.rows.length === 0) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+
+    res.json(staff.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update staff member
+app.put('/api/staff/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, crew_id, phone, password } = req.body;
+
+    // Check if email is already taken by another user
+    const emailCheck = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND id != $2', 
+      [email, id]
+    );
+    
+    if (emailCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    let updateQuery;
+    let params;
+
+    // If password is provided, hash it and update
+    if (password && password.trim() !== '') {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      
+      updateQuery = `
+        UPDATE users SET 
+          name = $1,
+          email = $2,
+          role = $3,
+          crew_id = $4,
+          phone = $5,
+          password = $6,
+          updated_at = NOW()
+        WHERE id = $7 
+        RETURNING id, name, email, role, crew_id, phone, created_at
+      `;
+      params = [name, email, role, crew_id, phone, hashedPassword, id];
+    } else {
+      // Update without changing password
+      updateQuery = `
+        UPDATE users SET 
+          name = $1,
+          email = $2,
+          role = $3,
+          crew_id = $4,
+          phone = $5,
+          updated_at = NOW()
+        WHERE id = $6 
+        RETURNING id, name, email, role, crew_id, phone, created_at
+      `;
+      params = [name, email, role, crew_id, phone, id];
+    }
+
+    const updatedStaff = await pool.query(updateQuery, params);
+
+    if (updatedStaff.rows.length === 0) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+
+    // Emit real-time update
+    io.emit('staff-updated', updatedStaff.rows[0]);
+
+    res.json(updatedStaff.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Delete staff member
+app.delete('/api/staff/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if user has any tasks assigned
+    const tasksCheck = await pool.query(
+      'SELECT COUNT(*) as task_count FROM tasks WHERE assigned_to = $1',
+      [id]
+    );
+
+    if (parseInt(tasksCheck.rows[0].task_count) > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete staff member with assigned tasks. Please reassign their tasks first.' 
+      });
+    }
+
+    const deletedStaff = await pool.query(
+      'DELETE FROM users WHERE id = $1 RETURNING id, name, email',
+      [id]
+    );
+
+    if (deletedStaff.rows.length === 0) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+
+    // Emit real-time update
+    io.emit('staff-deleted', { id: parseInt(id) });
+
+    res.status(204).send(); // No content response for successful delete
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get all users (including team leaders) - for admin purposes
+app.get('/api/users', authenticateToken, async (req, res) => {
+  try {
+    // Only allow team leaders or admins to see all users
+    if (req.user.role !== 'team_leader' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    const users = await pool.query(`
+      SELECT id, name, email, role, crew_id, phone, created_at
+      FROM users 
+      ORDER BY role, name
+    `);
+    res.json(users.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update user profile (for users to update their own profile)
+app.put('/api/profile', authenticateToken, async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+    const userId = req.user.id;
+
+    // Check if email is already taken by another user
+    const emailCheck = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND id != $2', 
+      [email, userId]
+    );
+    
+    if (emailCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    let updateQuery;
+    let params;
+
+    // If password is provided, hash it and update
+    if (password && password.trim() !== '') {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      
+      updateQuery = `
+        UPDATE users SET 
+          name = $1,
+          email = $2,
+          phone = $3,
+          password = $4,
+          updated_at = NOW()
+        WHERE id = $5 
+        RETURNING id, name, email, role, crew_id, phone
+      `;
+      params = [name, email, phone, hashedPassword, userId];
+    } else {
+      // Update without changing password
+      updateQuery = `
+        UPDATE users SET 
+          name = $1,
+          email = $2,
+          phone = $3,
+          updated_at = NOW()
+        WHERE id = $4 
+        RETURNING id, name, email, role, crew_id, phone
+      `;
+      params = [name, email, phone, userId];
+    }
+
+    const updatedUser = await pool.query(updateQuery, params);
+
+    res.json(updatedUser.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 // ==================== DASHBOARD STATS ====================
 

@@ -1,5 +1,5 @@
 {
-  "name": "my-parks-app",
+  "name": "mobile-app",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -13,7 +13,8 @@
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.2",
-    "@react-native-async-storage/async-storage": "2.1.2"
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "expo-dev-client": "~5.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

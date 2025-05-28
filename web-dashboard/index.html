@@ -13,15 +13,30 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: #334155;
+            min-height: 100vh;
         }
 
+        /* Enhanced Header Styles */
         .header {
             background: linear-gradient(135deg, #059669 0%, #065f46 100%);
             color: white;
             padding: 1rem 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            pointer-events: none;
         }
 
         .header-content {
@@ -30,64 +45,274 @@
             align-items: center;
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header-title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header-subtitle {
             font-size: 0.875rem;
-            opacity: 0.8;
+            opacity: 0.9;
+            margin-top: 0.25rem;
         }
 
         .user-info {
             text-align: right;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Enhanced Login Section */
+        .login-section {
+            max-width: 450px;
+            margin: 4rem auto;
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #1e293b;
+            position: relative;
+        }
+
+        .login-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3rem;
+            height: 0.25rem;
+            background: linear-gradient(90deg, #059669, #10b981);
+            border-radius: 0.125rem;
+        }
+
+        /* Enhanced Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Enhanced Button Styles */
+        .login-button, .action-button {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button {
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        .action-button:hover, .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        .action-button.secondary:hover {
+            box-shadow: 0 10px 25px rgba(100, 116, 139, 0.3);
+        }
+
+        .demo-credentials {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            border: 1px solid #d1d5db;
+        }
+
+        /* Enhanced Main Container */
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
 
+        /* Enhanced Navigation */
         .dashboard-nav {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
             margin-bottom: 2rem;
-            border-bottom: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
         .nav-button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.5rem;
             background: none;
             border: none;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             color: #64748b;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-button.active {
-            color: #059669;
-            border-bottom-color: #059669;
+            color: white;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
 
-        .nav-button:hover {
+        .nav-button:hover:not(.active) {
+            background: rgba(5, 150, 105, 0.1);
             color: #059669;
         }
 
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color, #059669), var(--accent-light, #10b981));
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-color, #059669), var(--accent-light, #10b981));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stats-pending { --accent-color: #f59e0b; --accent-light: #fbbf24; }
+        .stats-progress { --accent-color: #3b82f6; --accent-light: #60a5fa; }
+        .stats-completed { --accent-color: #10b981; --accent-light: #34d399; }
+        .stats-reschedule { --accent-color: #ef4444; --accent-light: #f87171; }
+
+        /* Enhanced Quick Actions */
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Enhanced Calendar Controls */
         .view-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .calendar-nav {
@@ -97,55 +322,70 @@
         }
 
         .calendar-nav button {
-            padding: 0.5rem 1rem;
-            background: #f1f5f9;
+            padding: 0.75rem 1rem;
+            background: rgba(248, 250, 252, 0.8);
             border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
 
         .calendar-nav button:hover {
-            background: #e2e8f0;
+            background: #059669;
+            color: white;
+            transform: translateY(-1px);
         }
 
         .current-date {
             font-size: 1.25rem;
             font-weight: bold;
             color: #1e293b;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .current-date:hover {
+            color: #059669;
+            background: rgba(5, 150, 105, 0.1);
         }
 
         .view-toggle {
             display: flex;
-            background: #f1f5f9;
-            border-radius: 0.375rem;
+            background: rgba(241, 245, 249, 0.8);
+            border-radius: 0.75rem;
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
 
         .view-toggle button {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem;
             background: none;
             border: none;
             cursor: pointer;
             font-weight: 500;
             color: #64748b;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
 
         .view-toggle button.active {
-            background: #059669;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
         }
 
+        /* Enhanced Calendar Container */
         .calendar-container {
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Day View */
         .day-view {
             display: none;
         }
@@ -155,243 +395,352 @@
         }
 
         .day-header {
-            background: #f8fafc;
-            padding: 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1.5rem;
             border-bottom: 1px solid #e2e8f0;
             font-weight: bold;
             text-align: center;
+            font-size: 1.125rem;
         }
 
         .day-schedule {
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .time-slot {
             display: flex;
             align-items: flex-start;
             border-bottom: 1px solid #f1f5f9;
-            min-height: 60px;
+            min-height: 70px;
+            transition: all 0.3s ease;
+        }
+
+        .time-slot:hover {
+            background: rgba(5, 150, 105, 0.02);
         }
 
         .time-label {
-            width: 80px;
-            padding: 0.5rem;
+            width: 100px;
+            padding: 0.75rem;
             font-size: 0.875rem;
             color: #64748b;
             text-align: right;
+            font-weight: 500;
         }
 
         .time-content {
             flex: 1;
-            padding: 0.5rem;
+            padding: 0.75rem;
         }
 
-        /* Week View */
-        .week-view {
-            display: none;
-        }
-
-        .week-view.active {
-            display: block;
-        }
-
-        .week-grid {
-            display: grid;
-            grid-template-columns: 80px repeat(7, 1fr);
-            gap: 1px;
-            background: #e2e8f0;
-        }
-
-        .week-header {
-            background: #f8fafc;
-            padding: 1rem 0.5rem;
-            text-align: center;
-            font-weight: 500;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .week-day {
-            background: white;
-            min-height: 100px;
-            padding: 0.5rem;
-        }
-
-        .week-day.today {
-            background: #f0f9ff;
-        }
-
-        /* Month View */
-        .month-view {
-            display: none;
-        }
-
-        .month-view.active {
-            display: block;
-        }
-
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: #e2e8f0;
-        }
-
-        .month-header {
-            background: #f8fafc;
-            padding: 1rem;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .month-day {
-            background: white;
-            min-height: 120px;
-            padding: 0.5rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .month-day.other-month {
-            background: #f8fafc;
-            color: #94a3b8;
-        }
-
-        .month-day.today {
-            background: #f0f9ff;
-        }
-
-        .day-number {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Task Cards */
+        /* Enhanced Task Items */
         .task-item {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
-            padding: 0.5rem;
-            margin: 0.25rem 0;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
+            padding: 0.875rem;
+            margin: 0.5rem 0;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .task-item:hover::before {
+            left: 100%;
         }
 
         .task-item:hover {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
 
         .task-item.high-priority {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .task-item.high-priority:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
         }
 
         .task-item.medium-priority {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .task-item.medium-priority:hover {
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
         }
 
         .task-item.low-priority {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .task-item.low-priority:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
         .task-item.completed {
             background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            opacity: 0.7;
+            opacity: 0.8;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
         }
 
         .task-item.needs-reschedule {
             background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
             animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.8;
+                transform: scale(1.02);
+            }
         }
 
         .task-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        .task-details {
-            font-size: 0.625rem;
-            opacity: 0.9;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stats-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .stats-number {
-            font-size: 2rem;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 0.5rem;
-        }
-
-        .stats-label {
-            color: #64748b;
             font-size: 0.875rem;
         }
 
-        .stats-pending { color: #f59e0b; }
-        .stats-progress { color: #3b82f6; }
-        .stats-completed { color: #10b981; }
-        .stats-reschedule { color: #ef4444; }
-
-        /* Quick Actions */
-        .quick-actions {
-            background: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+        .task-details {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            line-height: 1.4;
         }
 
-        .action-buttons {
+        /* Enhanced Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            position: relative;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-actions {
             display: flex;
             gap: 1rem;
-            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-top: 2rem;
         }
 
-        .action-button {
-            padding: 0.75rem 1.5rem;
-            background: #059669;
-            color: white;
+        /* Enhanced Inbox Styles */
+        .reschedule-inbox {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .inbox-item {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .inbox-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .inbox-item h4 {
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: #92400e;
+        }
+
+        .inbox-item p {
+            font-size: 0.875rem;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .inbox-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .inbox-actions button {
+            padding: 0.75rem 1.25rem;
             border: none;
-            border-radius: 0.375rem;
-            font-weight: 500;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        .action-button:hover {
-            background: #047857;
+        .reschedule-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+        }
+
+        .reschedule-btn:hover {
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
 
-        .action-button.secondary {
-            background: #64748b;
+        .reassign-btn {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
         }
 
-        .action-button.secondary:hover {
-            background: #475569;
+        .reassign-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
         }
 
-        /* Responsive */
+        /* Enhanced Notification */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3);
+            z-index: 1100;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification::before {
+            content: '✓';
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .loading::before {
+            content: '';
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #e2e8f0;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ef4444;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
                 padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .user-info {
+                text-align: center;
             }
 
             .view-controls {
@@ -404,95 +753,177 @@
                 justify-content: center;
             }
 
-            .week-grid {
-                grid-template-columns: 60px repeat(7, 1fr);
+            .dashboard-nav {
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
-            .month-day {
-                min-height: 80px;
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
             }
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                color: #e2e8f0;
+            }
+            
+            .login-section {
+                background: rgba(30, 41, 59, 0.95);
+            }
+            
+            .form-input, .form-select, .form-textarea {
+                background: #1e293b;
+                border-color: #334155;
+                color: #e2e8f0;
+            }
+        }
+
+        /* Continuous Calendar Styles */
+        #continuous-calendar {
+            height: 600px;
+            position: relative;
+            background: transparent;
+        }
+
+        .continuous-calendar {
+            font-family: inherit;
+        }
+
+        .continuous-calendar .month-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1rem;
+            font-weight: bold;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 10;
         }
 
-        .modal.active {
+        .continuous-calendar .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 3rem;
+            z-index: 9;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .continuous-calendar .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .continuous-calendar .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            padding: 1px;
+        }
+
+        .continuous-calendar .day-cell {
+            background: white;
+            min-height: 120px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .continuous-calendar .day-cell:hover {
+            background: #f8fafc;
+            box-shadow: 0 0 0 2px #059669 inset;
+            transform: scale(1.02);
+        }
+
+        .continuous-calendar .day-cell.other-month {
+            background: #fafafa;
+            color: #9ca3af;
+        }
+
+        .continuous-calendar .day-cell.today {
+            box-shadow: 0 0 0 3px #059669 inset;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+
+        .continuous-calendar .day-cell.selected {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+
+        .continuous-calendar .day-number {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .continuous-calendar .day-cell.today .day-number {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
             font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
         }
 
-        .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
+        .continuous-calendar .task-indicator {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem 0;
             border-radius: 0.375rem;
-            font-size: 0.875rem;
-            background: white;
+            font-size: 0.625rem;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
 
-        .form-textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            min-height: 100px;
-            resize: vertical;
+        .continuous-calendar .task-indicator:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
+        .continuous-calendar .task-indicator.high-priority {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
         }
 
-        .hidden {
-            display: none !important;
+        .continuous-calendar .task-indicator.medium-priority {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+        }
+
+        .continuous-calendar .task-indicator.low-priority {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+
+        .continuous-calendar .task-indicator.completed {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            opacity: 0.7;
+            box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
         }
     </style>
 </head>
@@ -503,19 +934,41 @@
                 <h1 class="header-title">Parks & Gardens Management</h1>
                 <p class="header-subtitle">Team Leader Dashboard</p>
             </div>
-            <div class="user-info">
-                <div style="font-weight: 500;">Sarah Johnson</div>
-                <div style="font-size: 0.875rem; opacity: 0.8;">Team Leader - East District</div>
+            <div class="user-info" id="userInfo">
+                <div id="loginSection" class="hidden">
+                    <button onclick="logout()" class="action-button">Logout</button>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="main-container">
+    <!-- Login Section -->
+    <div id="loginContainer" class="login-section">
+        <h2 class="login-title">Team Leader Login</h2>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="loginEmail" class="form-input" value="sarah.johnson@cityparks.gov" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="loginPassword" class="form-input" value="password" placeholder="Enter your password">
+        </div>
+        <button class="login-button" onclick="login()">Login</button>
+        
+        <div class="demo-credentials">
+            <strong>Demo Credentials:</strong><br>
+            Email: sarah.johnson@cityparks.gov<br>
+            Password: password
+        </div>
+        <div id="loginError" class="error hidden"></div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <main id="dashboard" class="main-container hidden">
         <nav class="dashboard-nav">
             <button class="nav-button active" onclick="showSection('schedule')">📅 Schedule</button>
             <button class="nav-button" onclick="showSection('tasks')">📋 Task Management</button>
             <button class="nav-button" onclick="showSection('staff')">👥 Staff Overview</button>
-            <button class="nav-button" onclick="showSection('reports')">📊 Reports</button>
             <button class="nav-button" onclick="showSection('inbox')">📥 Reschedule Inbox</button>
         </nav>
 
@@ -524,19 +977,19 @@
             <!-- Stats Overview -->
             <div class="stats-grid">
                 <div class="stats-card">
-                    <div class="stats-number stats-pending">8</div>
+                    <div class="stats-number stats-pending" id="statsPending">-</div>
                     <div class="stats-label">Pending Tasks</div>
                 </div>
                 <div class="stats-card">
-                    <div class="stats-number stats-progress">3</div>
+                    <div class="stats-number stats-progress" id="statsProgress">-</div>
                     <div class="stats-label">In Progress</div>
                 </div>
                 <div class="stats-card">
-                    <div class="stats-number stats-completed">12</div>
+                    <div class="stats-number stats-completed" id="statsCompleted">-</div>
                     <div class="stats-label">Completed Today</div>
                 </div>
                 <div class="stats-card">
-                    <div class="stats-number stats-reschedule">2</div>
+                    <div class="stats-number stats-reschedule" id="statsReschedule">-</div>
                     <div class="stats-label">Need Rescheduling</div>
                 </div>
             </div>
@@ -546,23 +999,24 @@
                 <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
                 <div class="action-buttons">
                     <button class="action-button" onclick="openModal('task-modal')">➕ Create New Task</button>
-                    <button class="action-button secondary" onclick="openModal('staff-modal')">👤 Assign Staff</button>
-                    <button class="action-button secondary" onclick="openModal('equipment-modal')">🚜 Manage Equipment</button>
-                    <button class="action-button secondary">📄 Generate Report</button>
+                    <button class="action-button secondary" onclick="loadTasks()">🔄 Refresh Data</button>
+                    <button class="action-button secondary" onclick="loadStaff()">👥 View Staff</button>
                 </div>
             </div>
 
-            <!-- Calendar Controls -->
+            <!-- Calendar View -->
             <div class="view-controls">
                 <div class="calendar-nav">
                     <button onclick="previousPeriod()">‹ Previous</button>
-                    <div class="current-date" id="currentDate">May 2025</div>
+                    <div class="current-date" id="currentDate" onclick="goToToday()" title="Click to go to today">Today</div>
                     <button onclick="nextPeriod()">Next ›</button>
                 </div>
                 <div class="view-toggle">
                     <button class="active" onclick="setView('day')">Day</button>
                     <button onclick="setView('week')">Week</button>
                     <button onclick="setView('month')">Month</button>
+                    <button onclick="setView('list')">List</button>
+                    <button onclick="setView('continuous')">Calendar</button>
                 </div>
             </div>
 
@@ -570,237 +1024,101 @@
             <div class="calendar-container">
                 <!-- Day View -->
                 <div class="day-view active" id="day-view">
-                    <div class="day-header">Tuesday, May 27, 2025</div>
-                    <div class="day-schedule">
-                        <div class="time-slot">
-                            <div class="time-label">8:00 AM</div>
-                            <div class="time-content">
-                                <div class="task-item high-priority">
-                                    <div class="task-title">Morning Safety Briefing</div>
-                                    <div class="task-details">All Crews • East District Office</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-label">9:00 AM</div>
-                            <div class="time-content">
-                                <div class="task-item medium-priority">
-                                    <div class="task-title">Mow Riverside Park - East Section</div>
-                                    <div class="task-details">John Smith, Mike Chen • 2.5 hrs</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-label">10:00 AM</div>
-                            <div class="time-content">
-                                <div class="task-item low-priority">
-                                    <div class="task-title">Plant Maintenance - Community Garden</div>
-                                    <div class="task-details">Lisa Wong • 3 hrs</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-label">11:00 AM</div>
-                            <div class="time-content">
-                                <div class="task-item needs-reschedule">
-                                    <div class="task-title">Tree Pruning - Main Street</div>
-                                    <div class="task-details">⚠️ Equipment malfunction - needs rescheduling</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-label">12:00 PM</div>
-                            <div class="time-content">
-                                <div class="task-item completed">
-                                    <div class="task-title">Lunch Break</div>
-                                    <div class="task-details">All staff</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-slot">
-                            <div class="time-label">1:00 PM</div>
-                            <div class="time-content">
-                                <div class="task-item medium-priority">
-                                    <div class="task-title">Hedge Trimming - Main Street Median</div>
-                                    <div class="task-details">David Kim • 1.5 hrs</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="day-header" id="dayHeader">Today's Schedule</div>
+                    <div class="day-schedule" id="daySchedule">
+                        <div class="loading">Loading today's tasks...</div>
                     </div>
                 </div>
 
                 <!-- Week View -->
-                <div class="week-view" id="week-view">
-                    <div class="week-grid">
-                        <div class="week-header">Time</div>
-                        <div class="week-header">Mon<br><small>26</small></div>
-                        <div class="week-header">Tue<br><small>27</small></div>
-                        <div class="week-header">Wed<br><small>28</small></div>
-                        <div class="week-header">Thu<br><small>29</small></div>
-                        <div class="week-header">Fri<br><small>30</small></div>
-                        <div class="week-header">Sat<br><small>31</small></div>
-                        <div class="week-header">Sun<br><small>1</small></div>
-                        
-                        <div class="week-day">9 AM</div>
-                        <div class="week-day">
-                            <div class="task-item completed">
-                                <div class="task-title">Park Cleanup</div>
-                                <div class="task-details">Crew #1</div>
-                            </div>
+                <div class="day-view" id="week-view">
+                    <div class="day-header">Week View</div>
+                    <div class="day-schedule">
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e2e8f0;">
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Mon</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Tue</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Wed</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Thu</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Fri</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Sat</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Sun</div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-mon"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-tue"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-wed"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-thu"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-fri"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-sat"></div>
+                            <div style="background: white; padding: 0.5rem; min-height: 100px;" id="week-sun"></div>
                         </div>
-                        <div class="week-day today">
-                            <div class="task-item high-priority">
-                                <div class="task-title">Safety Briefing</div>
-                                <div class="task-details">All Crews</div>
-                            </div>
-                            <div class="task-item medium-priority">
-                                <div class="task-title">Riverside Mowing</div>
-                                <div class="task-details">Crew #2</div>
-                            </div>
-                        </div>
-                        <div class="week-day">
-                            <div class="task-item low-priority">
-                                <div class="task-title">Garden Maintenance</div>
-                                <div class="task-details">Crew #3</div>
-                            </div>
-                        </div>
-                        <div class="week-day">
-                            <div class="task-item medium-priority">
-                                <div class="task-title">Tree Inspection</div>
-                                <div class="task-details">Arborist Team</div>
-                            </div>
-                        </div>
-                        <div class="week-day">
-                            <div class="task-item low-priority">
-                                <div class="task-title">Equipment Check</div>
-                                <div class="task-details">Maintenance</div>
-                            </div>
-                        </div>
-                        <div class="week-day"></div>
-                        <div class="week-day"></div>
                     </div>
                 </div>
 
                 <!-- Month View -->
-                <div class="month-view" id="month-view">
-                    <div class="month-grid">
-                        <div class="month-header">Sun</div>
-                        <div class="month-header">Mon</div>
-                        <div class="month-header">Tue</div>
-                        <div class="month-header">Wed</div>
-                        <div class="month-header">Thu</div>
-                        <div class="month-header">Fri</div>
-                        <div class="month-header">Sat</div>
-                        
-                        <!-- Week 1 -->
-                        <div class="month-day other-month"><div class="day-number">27</div></div>
-                        <div class="month-day other-month"><div class="day-number">28</div></div>
-                        <div class="month-day other-month"><div class="day-number">29</div></div>
-                        <div class="month-day other-month"><div class="day-number">30</div></div>
-                        <div class="month-day"><div class="day-number">1</div></div>
-                        <div class="month-day"><div class="day-number">2</div></div>
-                        <div class="month-day"><div class="day-number">3</div></div>
-                        
-                        <!-- Week 2 -->
-                        <div class="month-day"><div class="day-number">4</div></div>
-                        <div class="month-day"><div class="day-number">5</div></div>
-                        <div class="month-day"><div class="day-number">6</div></div>
-                        <div class="month-day"><div class="day-number">7</div></div>
-                        <div class="month-day"><div class="day-number">8</div></div>
-                        <div class="month-day"><div class="day-number">9</div></div>
-                        <div class="month-day"><div class="day-number">10</div></div>
-                        
-                        <!-- Week 3 -->
-                        <div class="month-day"><div class="day-number">11</div></div>
-                        <div class="month-day"><div class="day-number">12</div></div>
-                        <div class="month-day"><div class="day-number">13</div></div>
-                        <div class="month-day"><div class="day-number">14</div></div>
-                        <div class="month-day"><div class="day-number">15</div></div>
-                        <div class="month-day"><div class="day-number">16</div></div>
-                        <div class="month-day"><div class="day-number">17</div></div>
-                        
-                        <!-- Week 4 -->
-                        <div class="month-day"><div class="day-number">18</div></div>
-                        <div class="month-day"><div class="day-number">19</div></div>
-                        <div class="month-day"><div class="day-number">20</div></div>
-                        <div class="month-day"><div class="day-number">21</div></div>
-                        <div class="month-day"><div class="day-number">22</div></div>
-                        <div class="month-day"><div class="day-number">23</div></div>
-                        <div class="month-day"><div class="day-number">24</div></div>
-                        
-                        <!-- Week 5 -->
-                        <div class="month-day"><div class="day-number">25</div>
-                            <div class="task-item low-priority">
-                                <div class="task-title">Equipment Service</div>
-                            </div>
+                <div class="day-view" id="month-view">
+                    <div class="day-header">Month View</div>
+                    <div class="day-schedule">
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e2e8f0;">
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Sun</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Mon</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Tue</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Wed</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Thu</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Fri</div>
+                            <div style="background: #f8fafc; padding: 1rem; text-align: center; font-weight: 500;">Sat</div>
+                            <div id="month-calendar" style="display: contents;"></div>
                         </div>
-                        <div class="month-day"><div class="day-number">26</div>
-                            <div class="task-item completed">
-                                <div class="task-title">Park Cleanup</div>
-                            </div>
-                        </div>
-                        <div class="month-day today"><div class="day-number">27</div>
-                            <div class="task-item high-priority">
-                                <div class="task-title">Safety Brief</div>
-                            </div>
-                            <div class="task-item medium-priority">
-                                <div class="task-title">Mowing</div>
-                            </div>
-                            <div class="task-item needs-reschedule">
-                                <div class="task-title">Tree Pruning</div>
-                            </div>
-                        </div>
-                        <div class="month-day"><div class="day-number">28</div>
-                            <div class="task-item low-priority">
-                                <div class="task-title">Garden Care</div>
-                            </div>
-                        </div>
-                        <div class="month-day"><div class="day-number">29</div>
-                            <div class="task-item medium-priority">
-                                <div class="task-title">Tree Inspection</div>
-                            </div>
-                        </div>
-                        <div class="month-day"><div class="day-number">30</div>
-                            <div class="task-item low-priority">
-                                <div class="task-title">Equipment Check</div>
-                            </div>
-                        </div>
-                        <div class="month-day"><div class="day-number">31</div></div>
                     </div>
+                </div>
+
+                <!-- List View -->
+                <div class="day-view" id="list-view">
+                    <div class="day-header">All Tasks</div>
+                    <div class="day-schedule" id="listSchedule">
+                        <div class="loading">Loading all tasks...</div>
+                    </div>
+                </div>
+
+                <!-- Continuous Calendar View -->
+                <div class="day-view" id="continuous-view">
+                    <div id="continuous-calendar"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Other sections (hidden by default) -->
+        <!-- Task Management Section -->
         <section id="tasks-section" class="hidden">
             <h2>Task Management</h2>
-            <p>Task creation and management interface coming soon...</p>
+            <div class="quick-actions">
+                <div class="action-buttons">
+                    <button class="action-button" onclick="openModal('task-modal')">➕ Create New Task</button>
+                    <button class="action-button secondary" onclick="loadAllTasks()">🔄 Refresh Tasks</button>
+                </div>
+            </div>
+            <div id="tasksList">
+                <div class="loading">Loading tasks...</div>
+            </div>
         </section>
 
+        <!-- Staff Overview Section -->
         <section id="staff-section" class="hidden">
-            <h2>Staff Overview</h2>
-            <p>Staff management interface coming soon...</p>
+            <h2>Staff Management</h2>
+            <div class="quick-actions">
+                <div class="action-buttons">
+                    <button class="action-button" onclick="openModal('staff-modal')">➕ Add New Staff</button>
+                    <button class="action-button secondary" onclick="loadStaff()">🔄 Refresh Staff</button>
+                </div>
+            </div>
+            <div id="staffList">
+                <div class="loading">Loading staff...</div>
+            </div>
         </section>
 
-        <section id="reports-section" class="hidden">
-            <h2>Reports</h2>
-            <p>Reporting interface coming soon...</p>
-        </section>
-
+        <!-- Reschedule Inbox Section -->
         <section id="inbox-section" class="hidden">
             <h2>Reschedule Inbox</h2>
-            <div class="stats-card">
-                <div class="stats-number stats-reschedule">2</div>
-                <div class="stats-label">Tasks Need Rescheduling</div>
-            </div>
-            <div style="margin-top: 1rem;">
-                <div class="task-item needs-reschedule" style="margin: 0.5rem 0; padding: 1rem;">
-                    <div class="task-title">Tree Pruning - Main Street</div>
-                    <div class="task-details">Originally scheduled: Today 11:00 AM • Reason: Equipment malfunction</div>
-                    <div style="margin-top: 0.5rem;">
-                        <button class="action-button" style="padding: 0.5rem 1rem; margin-right: 0.5rem;">Reschedule</button>
-                        <button class="action-button secondary" style="padding: 0.5rem 1rem;">Reassign</button>
-                    </div>
+            <div class="reschedule-inbox">
+                <div id="rescheduleList">
+                    <div class="loading">Loading reschedule requests...</div>
                 </div>
             </div>
         </section>
@@ -810,286 +1128,1456 @@
     <div class="modal" id="task-modal">
         <div class="modal-content">
             <div class="modal-header">Create New Task</div>
-            <form>
+            <form id="taskForm">
                 <div class="form-group">
                     <label class="form-label">Task Title</label>
-                    <input type="text" class="form-input" placeholder="e.g., Mow Central Park - North Section">
+                    <input type="text" id="taskTitle" class="form-input" placeholder="e.g., Mow Central Park - North Section" title="Enter a clear, descriptive task name">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Location</label>
-                    <input type="text" class="form-input" placeholder="e.g., Central Park, North Lawn Area">
+                    <input type="text" id="taskLocation" class="form-input" placeholder="e.g., Central Park, North Lawn Area" title="Specify the exact location where work will be performed">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Priority</label>
-                    <select class="form-select">
+                    <select id="taskPriority" class="form-select">
                         <option value="low">Low</option>
-                        <option value="medium">Medium</option>
+                        <option value="medium" selected>Medium</option>
                         <option value="high">High</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Assigned Staff</label>
-                    <select class="form-select">
-                        <option value="">Select staff member...</option>
-                        <option value="john-smith">John Smith (Crew #2)</option>
-                        <option value="mike-chen">Mike Chen (Crew #2)</option>
-                        <option value="lisa-wong">Lisa Wong (Crew #3)</option>
-                        <option value="david-kim">David Kim (Crew #1)</option>
-                        <option value="sarah-davis">Sarah Davis (Crew #1)</option>
+                    <select id="taskAssignedTo" class="form-select">
+                        <option value="">Loading staff...</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Date & Time</label>
-                    <input type="datetime-local" class="form-input">
+                    <label class="form-label">Scheduled Date & Time</label>
+                    <input type="datetime-local" id="taskScheduledDate" class="form-input">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Estimated Hours</label>
-                    <input type="number" class="form-input" placeholder="2.5" step="0.5" min="0.5">
+                    <input type="number" id="taskEstimatedHours" class="form-input" placeholder="2.5" step="0.5" min="0.5" title="Estimate how long this task should take">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Equipment Required</label>
-                    <input type="text" class="form-input" placeholder="e.g., Ride-on Mower #3, Safety Cones">
+                    <input type="text" id="taskEquipment" class="form-input" placeholder="e.g., Ride-on Mower #3, Safety Cones" title="List required equipment separated by commas">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Risk Assessment</label>
-                    <select class="form-select">
-                        <option value="">Select Risk Assessment...</option>
-                        <option value="ra-2024-015">Ride-on Mower Operation - RA-2024-015</option>
-                        <option value="ra-2024-023">Hedge Trimming Near Traffic - RA-2024-023</option>
-                        <option value="ra-2024-031">Tree Pruning - RA-2024-031</option>
-                        <option value="ra-2024-042">Chemical Application - RA-2024-042</option>
+                    <select id="taskRiskAssessment" class="form-select" title="Select appropriate risk assessment for this work">
+                        <option value="">Loading risk assessments...</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">SWMS Document</label>
-                    <select class="form-select">
-                        <option value="">Select SWMS...</option>
-                        <option value="swms-2024-008">Large Area Mowing Procedure - SWMS-2024-008</option>
-                        <option value="swms-2024-012">Roadside Hedge Maintenance - SWMS-2024-012</option>
-                        <option value="swms-2024-019">Tree Maintenance - SWMS-2024-019</option>
-                        <option value="swms-2024-025">Pesticide Application - SWMS-2024-025</option>
+                    <select id="taskSwms" class="form-select" title="Choose the relevant safe work method statement">
+                        <option value="">Loading SWMS documents...</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Task Description</label>
-                    <textarea class="form-textarea" placeholder="Detailed description of the work to be performed..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Recurring Task</label>
-                    <select class="form-select">
-                        <option value="none">One-time task</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
+                    <textarea id="taskDescription" class="form-textarea" placeholder="Detailed description of the work to be performed..."></textarea>
                 </div>
             </form>
             <div class="modal-actions">
                 <button class="action-button secondary" onclick="closeModal('task-modal')">Cancel</button>
                 <button class="action-button" onclick="createTask()">Create Task</button>
             </div>
+            <div id="taskError" class="error hidden"></div>
         </div>
     </div>
 
-    <!-- Staff Assignment Modal -->
+    <!-- Staff Management Modal -->
     <div class="modal" id="staff-modal">
         <div class="modal-content">
-            <div class="modal-header">Staff Assignment</div>
-            <div style="margin-bottom: 1rem;">
-                <h4>Current Staff Assignments - Today</h4>
-            </div>
-            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981;">
-                    <strong>John Smith (Crew #2)</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        ✅ Riverside Park Mowing (9:00 AM - 11:30 AM)<br>
-                        📋 Hedge Trimming - Main Street (1:00 PM - 2:30 PM)
-                    </div>
+            <div class="modal-header" id="staffModalHeader">Add New Staff Member</div>
+            <form id="staffForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="staffName" class="form-input" placeholder="e.g., John Smith">
                 </div>
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #f59e0b;">
-                    <strong>Lisa Wong (Crew #3)</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        🔄 Plant Maintenance - Community Garden (10:00 AM - 1:00 PM)
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="staffEmail" class="form-input" placeholder="e.g., john.smith@cityparks.gov">
                 </div>
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #6b7280;">
-                    <strong>Mike Chen (Crew #2)</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        💼 Available for assignment
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="staffPassword" class="form-input" placeholder="Enter password">
                 </div>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select id="staffRole" class="form-select">
+                        <option value="field_staff">Field Staff</option>
+                        <option value="team_leader">Team Leader</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Crew ID</label>
+                    <input type="text" id="staffCrewId" class="form-input" placeholder="e.g., CREW2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="text" id="staffPhone" class="form-input" placeholder="e.g., +1234567890">
+                </div>
+            </form>
             <div class="modal-actions">
-                <button class="action-button secondary" onclick="closeModal('staff-modal')">Close</button>
-                <button class="action-button">Reassign Tasks</button>
+                <button class="action-button secondary" onclick="closeModal('staff-modal')">Cancel</button>
+                <button class="action-button" id="staffSubmitBtn" onclick="createStaff()">Add Staff Member</button>
             </div>
+            <div id="staffError" class="error hidden"></div>
         </div>
     </div>
 
-    <!-- Equipment Modal -->
-    <div class="modal" id="equipment-modal">
-        <div class="modal-content">
-            <div class="modal-header">Equipment Management</div>
-            <div style="margin-bottom: 1rem;">
-                <h4>Equipment Status - Today</h4>
-            </div>
-            <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981;">
-                    <strong>Ride-on Mower #3</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        ✅ Available • Last service: May 20, 2025 • Assigned to: John Smith
-                    </div>
-                </div>
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #ef4444;">
-                    <strong>Hedge Trimmer #2</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        🔧 Under maintenance • Expected return: May 28, 2025
-                    </div>
-                </div>
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #f59e0b;">
-                    <strong>Chainsaw #1</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        ⚠️ Service due in 3 days • Currently assigned to: Tree Crew
-                    </div>
-                </div>
-                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981;">
-                    <strong>Safety Cones (Set of 12)</strong>
-                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                        ✅ Available • Condition: Good • Last checked: May 25, 2025
-                    </div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="action-button secondary" onclick="closeModal('equipment-modal')">Close</button>
-                <button class="action-button">Schedule Maintenance</button>
-            </div>
-        </div>
-    </div>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
     <script>
+        // Configuration
+        const API_BASE_URL = 'https://parks-gardens-app-production.up.railway.app/api';
+        let authToken = null;
+        let currentUser = null;
         let currentView = 'day';
         let currentDate = new Date();
+        let tasks = [];
+        let staff = [];
+        let riskAssessments = [];
+        let swmsDocuments = [];
+        let allTasks = [];
+        let editingStaffId = null;
+        let continuousCalendar = null;
 
+        // Enhanced demo data for offline functionality
+        const demoData = {
+            user: { 
+                id: 1, 
+                name: 'Sarah Johnson', 
+                email: 'sarah.johnson@cityparks.gov', 
+                crew_id: 'EAST-01',
+                role: 'team_leader'
+            },
+            tasks: [
+                {
+                    id: 1,
+                    title: 'Mow Central Park - North Section',
+                    location: 'Central Park, North Lawn',
+                    priority: 'high',
+                    status: 'assigned',
+                    assigned_to: 2,
+                    assigned_to_name: 'Mike Chen',
+                    scheduled_date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+                    estimated_hours: 3.5,
+                    equipment_required: ['Ride-on Mower #3', 'Safety Cones'],
+                    description: 'Weekly mowing of the north section including cleanup'
+                },
+                {
+                    id: 2,
+                    title: 'Trim Rose Garden Hedges',
+                    location: 'Rose Garden, East Wing',
+                    priority: 'medium',
+                    status: 'in-progress',
+                    assigned_to: 3,
+                    assigned_to_name: 'Lisa Wang',
+                    scheduled_date: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString(),
+                    estimated_hours: 2,
+                    equipment_required: ['Hedge Trimmers', 'Ladder'],
+                    description: 'Seasonal trimming of hedge borders'
+                },
+                {
+                    id: 3,
+                    title: 'Water Fountain Maintenance',
+                    location: 'Main Plaza Fountain',
+                    priority: 'high',
+                    status: 'needs-rescheduling',
+                    assigned_to: 4,
+                    assigned_to_name: 'Tom Rodriguez',
+                    scheduled_date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    estimated_hours: 4,
+                    equipment_required: ['Tool Kit', 'Cleaning Supplies'],
+                    description: 'Monthly cleaning and pump inspection',
+                    incomplete_reason: 'Equipment malfunction - pump needs replacement'
+                },
+                {
+                    id: 4,
+                    title: 'Plant Seasonal Flowers',
+                    location: 'Welcome Garden Beds',
+                    priority: 'low',
+                    status: 'completed',
+                    assigned_to: 5,
+                    assigned_to_name: 'Emma Davis',
+                    scheduled_date: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                    estimated_hours: 5,
+                    equipment_required: ['Shovels', 'Watering Equipment'],
+                    description: 'Spring planting of seasonal display flowers'
+                }
+            ],
+            staff: [
+                { id: 2, name: 'Mike Chen', email: 'mike.chen@cityparks.gov', role: 'field_staff', crew_id: 'EAST-01', phone: '+1234567890' },
+                { id: 3, name: 'Lisa Wang', email: 'lisa.wang@cityparks.gov', role: 'field_staff', crew_id: 'EAST-01', phone: '+1234567891' },
+                { id: 4, name: 'Tom Rodriguez', email: 'tom.rodriguez@cityparks.gov', role: 'field_staff', crew_id: 'EAST-01', phone: '+1234567892' },
+                { id: 5, name: 'Emma Davis', email: 'emma.davis@cityparks.gov', role: 'field_staff', crew_id: 'EAST-01', phone: '+1234567893' }
+            ],
+            riskAssessments: [
+                { id: 1, title: 'General Grounds Maintenance', document_code: 'RA-001' },
+                { id: 2, title: 'Machinery Operation', document_code: 'RA-002' },
+                { id: 3, title: 'Chemical Handling', document_code: 'RA-003' }
+            ],
+            swmsDocuments: [
+                { id: 1, title: 'Lawn Mowing Operations', document_code: 'SWMS-001' },
+                { id: 2, title: 'Tree and Hedge Trimming', document_code: 'SWMS-002' },
+                { id: 3, title: 'Water Feature Maintenance', document_code: 'SWMS-003' }
+            ]
+        };
+
+        // Authentication Functions
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+
+                const data = await response.json();
+                authToken = data.token;
+                currentUser = data.user;
+
+                showDashboard();
+                loadInitialData();
+                showNotification('Login successful!');
+            } catch (error) {
+                errorDiv.textContent = 'Login failed. Please check your credentials.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            
+            document.getElementById('userInfo').innerHTML = `
+                <div style="font-weight: 600; font-size: 1rem;">${currentUser.name}</div>
+                <div style="font-size: 0.875rem; opacity: 0.9; margin: 0.25rem 0;">Team Leader - ${currentUser.crew_id || 'East District'}</div>
+                <button onclick="logout()" class="action-button" style="margin-top: 0.75rem; padding: 0.5rem 1rem; font-size: 0.875rem;">Logout</button>
+            `;
+        }
+
+        // API Helper function
+        async function apiCall(endpoint, options = {}) {
+            console.log(`API Call: ${options.method || 'GET'} ${API_BASE_URL}${endpoint}`);
+            console.log('Request options:', options);
+            
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken && { Authorization: `Bearer ${authToken}` }),
+                    ...options.headers,
+                },
+                ...options,
+            });
+
+            console.log(`API Response: ${response.status} ${response.statusText}`);
+            console.log('Response headers:', [...response.headers.entries()]);
+
+            if (!response.ok) {
+                // Try to get error details from response
+                let errorDetails = '';
+                try {
+                    const errorBody = await response.text();
+                    console.log('Error response body:', errorBody);
+                    errorDetails = errorBody ? ` - ${errorBody}` : '';
+                } catch (e) {
+                    console.log('Could not read error response body');
+                }
+                throw new Error(`HTTP error! status: ${response.status}${errorDetails}`);
+            }
+
+            // Handle empty responses (like DELETE operations)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const jsonResponse = await response.json();
+                console.log('JSON Response:', jsonResponse);
+                return jsonResponse;
+            }
+            console.log('Non-JSON response (likely empty)');
+            return null;
+        }
+
+        // Data Loading Functions
+        async function loadInitialData() {
+            await Promise.all([
+                loadStats(),
+                loadTasks(),
+                loadStaff(),
+                loadRiskAssessments(),
+                loadSwmsDocuments(),
+                loadAllTasks()
+            ]);
+        }
+
+        async function loadStats() {
+            try {
+                const stats = await apiCall('/dashboard/stats');
+                document.getElementById('statsPending').textContent = stats.pending || 0;
+                document.getElementById('statsProgress').textContent = stats.in_progress || 0;
+                document.getElementById('statsCompleted').textContent = stats.completed || 0;
+                document.getElementById('statsReschedule').textContent = stats.needs_rescheduling || 0;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                tasks = await apiCall(`/tasks?date=${today}`);
+                displayTasks();
+                displayRescheduleInbox();
+            } catch (error) {
+                console.error('Failed to load tasks:', error);
+                document.getElementById('daySchedule').innerHTML = '<div class="error">Failed to load tasks</div>';
+            }
+        }
+
+        async function loadAllTasks() {
+            try {
+                console.log('Loading all tasks...');
+                allTasks = await apiCall('/tasks');
+                console.log('Loaded tasks:', allTasks);
+                console.log('Task IDs available:', allTasks.map(t => t.id));
+                displayAllTasks();
+                updateContinuousCalendar();
+            } catch (error) {
+                console.error('Failed to load all tasks:', error);
+                document.getElementById('tasksList').innerHTML = '<div class="error">Failed to load tasks</div>';
+            }
+        }
+
+        async function loadStaff() {
+            try {
+                staff = await apiCall('/staff');
+                updateStaffDropdown();
+                displayStaff();
+            } catch (error) {
+                console.error('Failed to load staff:', error);
+            }
+        }
+
+        async function loadRiskAssessments() {
+            try {
+                riskAssessments = await apiCall('/risk-assessments');
+                updateRiskAssessmentDropdown();
+            } catch (error) {
+                console.error('Failed to load risk assessments:', error);
+            }
+        }
+
+        async function loadSwmsDocuments() {
+            try {
+                swmsDocuments = await apiCall('/swms');
+                updateSwmsDropdown();
+            } catch (error) {
+                console.error('Failed to load SWMS documents:', error);
+            }
+        }
+
+        // Display Functions
+        function displayTasks() {
+            const daySchedule = document.getElementById('daySchedule');
+            const listSchedule = document.getElementById('listSchedule');
+            
+            if (tasks.length === 0) {
+                const noTasks = '<div style="text-align: center; padding: 3rem; color: #64748b; font-size: 1.125rem;">No tasks scheduled for today</div>';
+                daySchedule.innerHTML = noTasks;
+                listSchedule.innerHTML = noTasks;
+                return;
+            }
+
+            const tasksByHour = {};
+            tasks.forEach(task => {
+                const hour = task.scheduled_date ? new Date(task.scheduled_date).getHours() : 9;
+                if (!tasksByHour[hour]) tasksByHour[hour] = [];
+                tasksByHour[hour].push(task);
+            });
+
+            let dayHtml = '';
+            for (let hour = 8; hour < 18; hour++) {
+                const timeLabel = hour === 12 ? '12:00 PM' : 
+                                 hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
+                const hourTasks = tasksByHour[hour] || [];
+                
+                dayHtml += `
+                    <div class="time-slot">
+                        <div class="time-label">${timeLabel}</div>
+                        <div class="time-content">
+                            ${hourTasks.map(task => createTaskElement(task)).join('')}
+                            ${hourTasks.length === 0 ? '<div style="color: #94a3b8; font-style: italic; padding: 1rem;">No tasks scheduled</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            daySchedule.innerHTML = dayHtml;
+
+            listSchedule.innerHTML = tasks.map(task => createTaskElement(task, true)).join('');
+            
+            displayWeekView();
+            displayMonthView();
+            updateContinuousCalendar();
+        }
+
+        function displayAllTasks() {
+            const tasksList = document.getElementById('tasksList');
+            
+            if (allTasks.length === 0) {
+                tasksList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #64748b; font-size: 1.125rem;">No tasks found</div>';
+                return;
+            }
+
+            const groupedTasks = {
+                'assigned': allTasks.filter(t => t.status === 'assigned'),
+                'in-progress': allTasks.filter(t => t.status === 'in-progress'),
+                'completed': allTasks.filter(t => t.status === 'completed'),
+                'needs-rescheduling': allTasks.filter(t => t.status === 'needs-rescheduling')
+            };
+
+            tasksList.innerHTML = Object.entries(groupedTasks).map(([status, tasks]) => `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: #1e293b; text-transform: capitalize; font-size: 1.25rem; font-weight: 600;">
+                        ${status.replace('-', ' ')} (${tasks.length})
+                    </h3>
+                    <div style="display: grid; gap: 1.5rem;">
+                        ${tasks.map(task => `
+                            <div style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-left: 4px solid ${getStatusColor(task.status)}; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.1)'">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <h4 style="font-weight: 600; flex: 1; font-size: 1.125rem; color: #1e293b;">${task.title}</h4>
+                                    <span style="background: linear-gradient(135deg, ${getStatusColor(task.status)}, ${getStatusColorLight(task.status)}); color: white; padding: 0.375rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 500; margin-left: 1rem;">
+                                        ${task.priority}
+                                    </span>
+                                </div>
+                                <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>📍 ${task.location}</span>
+                                    <span>•</span>
+                                    <span>👤 ${task.assigned_to_name || 'Unassigned'}</span>
+                                </p>
+                                <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span>⏰ ${new Date(task.scheduled_date).toLocaleString()}</span>
+                                    <span>•</span>
+                                    <span>⏱️ ${task.estimated_hours}h</span>
+                                </p>
+                                ${task.incomplete_reason ? `<p style="color: #ea580c; font-size: 0.875rem; margin-bottom: 0.75rem; padding: 0.75rem; background: rgba(234, 88, 12, 0.1); border-radius: 0.5rem; border-left: 3px solid #ea580c;">⚠️ ${task.incomplete_reason}</p>` : ''}
+                                <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+                                    <button onclick="editTask(${task.id})" style="padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #059669, #047857); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(5, 150, 105, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Edit</button>
+                                    <button onclick="deleteTask(${task.id})" style="padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Delete</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayStaff() {
+            const staffList = document.getElementById('staffList');
+            if (staff.length === 0) {
+                staffList.innerHTML = '<div class="loading">No staff found</div>';
+                return;
+            }
+
+            staffList.innerHTML = staff.map(member => {
+                const memberTasks = tasks.filter(t => t.assigned_to === member.id);
+                const activeTasks = memberTasks.filter(t => t.status === 'in-progress');
+                const completedTasks = memberTasks.filter(t => t.status === 'completed');
+                
+                return `
+                    <div style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 1.5rem; margin: 1rem 0; border-radius: 1rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.1)'">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h4 style="font-weight: 600; margin-bottom: 0.75rem; font-size: 1.25rem; color: #1e293b;">${member.name}</h4>
+                                <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: linear-gradient(135deg, #f1f5f9, #e2e8f0); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-weight: 500;">${member.crew_id}</span>
+                                    <span>•</span>
+                                    <span>${member.email}</span>
+                                    <span>•</span>
+                                    <span style="text-transform: capitalize;">${member.role.replace('_', ' ')}</span>
+                                </p>
+                                <div style="display: flex; gap: 1.5rem; font-size: 0.875rem;">
+                                    <span style="display: flex; align-items: center; gap: 0.25rem; color: #64748b;">📋 <strong>${memberTasks.length}</strong> tasks today</span>
+                                    <span style="display: flex; align-items: center; gap: 0.25rem; color: #3b82f6;">🔄 <strong>${activeTasks.length}</strong> active</span>
+                                    <span style="display: flex; align-items: center; gap: 0.25rem; color: #10b981;">✅ <strong>${completedTasks.length}</strong> completed</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem;">
+                                <button onclick="editStaff(${member.id})" style="padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #059669, #047857); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(5, 150, 105, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Edit</button>
+                                <button onclick="deleteStaff(${member.id})" style="padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayWeekView() {
+            const weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            
+            weekDays.forEach(day => {
+                const dayElement = document.getElementById(`week-${day}`);
+                if (dayElement) dayElement.innerHTML = '';
+            });
+            
+            tasks.forEach(task => {
+                const taskDate = new Date(task.scheduled_date);
+                const dayOfWeek = taskDate.getDay();
+                const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                
+                const dayElement = document.getElementById(`week-${weekDays[dayIndex]}`);
+                if (dayElement) {
+                    dayElement.innerHTML += createTaskElement(task);
+                }
+            });
+        }
+
+        function displayMonthView() {
+            const monthCalendar = document.getElementById('month-calendar');
+            if (!monthCalendar) return;
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            let monthHtml = '';
+            
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const isCurrentMonth = date.getMonth() === month;
+                const isToday = date.toDateString() === new Date().toDateString();
+                
+                const dayTasks = tasks.filter(task => {
+                    const taskDate = new Date(task.scheduled_date);
+                    return taskDate.toDateString() === date.toDateString();
+                });
+                
+                monthHtml += `
+                    <div style="background: ${isCurrentMonth ? 'white' : '#f8fafc'}; padding: 0.75rem; min-height: 100px; border: ${isToday ? '2px solid #059669' : 'none'}; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='${isCurrentMonth ? 'white' : '#f8fafc'}'" onclick="selectDate('${date.toISOString()}')">
+                        <div style="font-weight: ${isToday ? 'bold' : 'normal'}; margin-bottom: 0.5rem; color: ${isCurrentMonth ? '#374151' : '#9ca3af'}; ${isToday ? 'color: #059669;' : ''}">
+                            ${date.getDate()}
+                        </div>
+                        ${dayTasks.map(task => `
+                            <div style="background: linear-gradient(135deg, ${getStatusColor(task.status)}, ${getStatusColorLight(task.status)}); color: white; padding: 0.25rem 0.375rem; margin: 0.25rem 0; border-radius: 0.25rem; font-size: 0.625rem; cursor: pointer; transition: all 0.3s ease;" onclick="event.stopPropagation(); showTaskDetails(${task.id})" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                ${task.title.substring(0, 15)}${task.title.length > 15 ? '...' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            monthCalendar.innerHTML = monthHtml;
+        }
+
+        function displayRescheduleInbox() {
+            const rescheduleList = document.getElementById('rescheduleList');
+            const rescheduleTasks = tasks.filter(task => task.status === 'needs-rescheduling');
+            
+            if (rescheduleTasks.length === 0) {
+                rescheduleList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #64748b; font-size: 1.125rem;">No tasks need rescheduling</div>';
+                return;
+            }
+
+            rescheduleList.innerHTML = rescheduleTasks.map(task => `
+                <div class="inbox-item">
+                    <h4>${task.title}</h4>
+                    <p><strong>Originally scheduled:</strong> ${new Date(task.scheduled_date).toLocaleString()}</p>
+                    <p><strong>Assigned to:</strong> ${task.assigned_to_name}</p>
+                    <p><strong>Reason:</strong> ${task.incomplete_reason || 'No reason provided'}</p>
+                    <div class="inbox-actions">
+                        <button class="reschedule-btn" onclick="rescheduleTask(${task.id})">Reschedule</button>
+                        <button class="reassign-btn" onclick="reassignTask(${task.id})">Reassign</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Continuous Calendar Implementation
+        class ContinuousCalendar {
+            constructor(container, options = {}) {
+                this.container = container;
+                this.currentDate = options.startDate || new Date();
+                this.tasks = options.tasks || [];
+                this.onDateClick = options.onDateClick || (() => {});
+                this.onTaskClick = options.onTaskClick || (() => {});
+                
+                this.monthsToShow = 3;
+                this.monthHeight = 250;
+                
+                this.init();
+            }
+
+            init() {
+                this.container.innerHTML = '';
+                this.container.className = 'continuous-calendar';
+                
+                this.scrollContainer = document.createElement('div');
+                this.scrollContainer.style.height = '600px';
+                this.scrollContainer.style.overflow = 'auto';
+                this.scrollContainer.style.position = 'relative';
+                
+                this.container.appendChild(this.scrollContainer);
+                
+                this.render();
+                this.scrollToToday();
+                
+                this.scrollContainer.addEventListener('scroll', this.handleScroll.bind(this));
+            }
+
+            render() {
+                const startMonth = new Date(this.currentDate);
+                startMonth.setMonth(startMonth.getMonth() - 1);
+                
+                this.scrollContainer.innerHTML = '';
+                
+                for (let i = 0; i < this.monthsToShow; i++) {
+                    const monthDate = new Date(startMonth);
+                    monthDate.setMonth(monthDate.getMonth() + i);
+                    this.renderMonth(monthDate);
+                }
+            }
+
+            renderMonth(date) {
+                const monthContainer = document.createElement('div');
+                monthContainer.className = 'month-container';
+                monthContainer.dataset.month = date.getMonth();
+                monthContainer.dataset.year = date.getFullYear();
+                
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'month-header';
+                monthHeader.textContent = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                monthContainer.appendChild(monthHeader);
+                
+                const weekdaysContainer = document.createElement('div');
+                weekdaysContainer.className = 'weekdays';
+                const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                weekdays.forEach(day => {
+                    const weekday = document.createElement('div');
+                    weekday.className = 'weekday';
+                    weekday.textContent = day;
+                    weekdaysContainer.appendChild(weekday);
+                });
+                monthContainer.appendChild(weekdaysContainer);
+                
+                const daysGrid = document.createElement('div');
+                daysGrid.className = 'days-grid';
+                
+                const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+                const startDate = new Date(firstDay);
+                startDate.setDate(startDate.getDate() - firstDay.getDay());
+                
+                for (let i = 0; i < 42; i++) {
+                    const cellDate = new Date(startDate);
+                    cellDate.setDate(startDate.getDate() + i);
+                    
+                    if (i < 35 || cellDate.getMonth() === date.getMonth()) {
+                        this.renderDay(daysGrid, cellDate, date.getMonth());
+                    }
+                }
+                
+                monthContainer.appendChild(daysGrid);
+                this.scrollContainer.appendChild(monthContainer);
+            }
+
+            renderDay(container, date, currentMonth) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+                
+                if (date.getMonth() !== currentMonth) {
+                    dayCell.classList.add('other-month');
+                }
+                
+                if (this.isToday(date)) {
+                    dayCell.classList.add('today');
+                }
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = date.getDate();
+                dayCell.appendChild(dayNumber);
+                
+                const dayTasks = this.getTasksForDate(date);
+                dayTasks.forEach(task => {
+                    const taskEl = document.createElement('div');
+                    taskEl.className = `task-indicator ${task.priority}-priority`;
+                    if (task.status === 'completed') {
+                        taskEl.classList.add('completed');
+                    }
+                    taskEl.textContent = task.title;
+                    taskEl.onclick = (e) => {
+                        e.stopPropagation();
+                        this.onTaskClick(task);
+                    };
+                    dayCell.appendChild(taskEl);
+                });
+                
+                dayCell.onclick = () => this.onDateClick(date);
+                container.appendChild(dayCell);
+            }
+
+            isToday(date) {
+                const today = new Date();
+                return date.getDate() === today.getDate() &&
+                       date.getMonth() === today.getMonth() &&
+                       date.getFullYear() === today.getFullYear();
+            }
+
+            getTasksForDate(date) {
+                return this.tasks.filter(task => {
+                    if (!task.scheduled_date) return false;
+                    const taskDate = new Date(task.scheduled_date);
+                    return taskDate.getDate() === date.getDate() &&
+                           taskDate.getMonth() === date.getMonth() &&
+                           taskDate.getFullYear() === date.getFullYear();
+                });
+            }
+
+            scrollToToday() {
+                setTimeout(() => {
+                    const todayElement = this.scrollContainer.querySelector('.day-cell.today');
+                    if (todayElement) {
+                        todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
+            }
+
+            handleScroll() {
+                const { scrollTop, scrollHeight, clientHeight } = this.scrollContainer;
+                
+                if (scrollHeight - scrollTop - clientHeight < 200) {
+                    this.loadMoreMonths('future');
+                }
+                
+                if (scrollTop < 200) {
+                    this.loadMoreMonths('past');
+                }
+            }
+
+            loadMoreMonths(direction) {
+                if (this.loading) return;
+                this.loading = true;
+                
+                if (direction === 'future') {
+                    const lastMonth = this.scrollContainer.lastElementChild;
+                    const month = parseInt(lastMonth.dataset.month);
+                    const year = parseInt(lastMonth.dataset.year);
+                    const nextDate = new Date(year, month + 1, 1);
+                    
+                    for (let i = 0; i < 2; i++) {
+                        const monthDate = new Date(nextDate);
+                        monthDate.setMonth(monthDate.getMonth() + i);
+                        this.renderMonth(monthDate);
+                    }
+                }
+                
+                setTimeout(() => {
+                    this.loading = false;
+                }, 100);
+            }
+
+            updateTasks(tasks) {
+                this.tasks = tasks;
+                this.render();
+            }
+        }
+
+        function initializeContinuousCalendar() {
+            const container = document.getElementById('continuous-calendar');
+            if (container && allTasks) {
+                continuousCalendar = new ContinuousCalendar(container, {
+                    startDate: currentDate,
+                    tasks: allTasks,
+                    onDateClick: (date) => {
+                        currentDate = date;
+                        updateDateDisplay();
+                        loadTasks();
+                        setView('day');
+                    },
+                    onTaskClick: (task) => {
+                        showTaskDetails(task.id);
+                    }
+                });
+            }
+        }
+
+        function updateContinuousCalendar() {
+            if (continuousCalendar && allTasks) {
+                continuousCalendar.updateTasks(allTasks);
+            }
+        }
+
+        function createTaskElement(task, isListView = false) {
+            const priorityClass = `${task.priority}-priority`;
+            const statusClass = task.status === 'needs-rescheduling' ? 'needs-reschedule' : 
+                               task.status === 'completed' ? 'completed' : '';
+            
+            const timeInfo = task.scheduled_date ? 
+                new Date(task.scheduled_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            
+            return `
+                <div class="task-item ${priorityClass} ${statusClass}" onclick="showTaskDetails(${task.id})">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-details">
+                        ${task.assigned_to_name || 'Unassigned'} • ${timeInfo}
+                        ${isListView ? `<br>📍 ${task.location}` : ''}
+                        ${task.status === 'needs-rescheduling' ? `<br>⚠️ ${task.incomplete_reason || 'Needs attention'}` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'assigned': return '#f59e0b';
+                case 'in-progress': return '#3b82f6';
+                case 'completed': return '#10b981';
+                case 'needs-rescheduling': return '#ef4444';
+                default: return '#64748b';
+            }
+        }
+
+        function getStatusColorLight(status) {
+            switch(status) {
+                case 'assigned': return '#fbbf24';
+                case 'in-progress': return '#60a5fa';
+                case 'completed': return '#34d399';
+                case 'needs-rescheduling': return '#f87171';
+                default: return '#94a3b8';
+            }
+        }
+
+        function updateStaffDropdown() {
+            const dropdown = document.getElementById('taskAssignedTo');
+            dropdown.innerHTML = '<option value="">Select staff member...</option>' +
+                staff.map(member => `<option value="${member.id}">${member.name} (${member.crew_id})</option>`).join('');
+        }
+
+        function updateRiskAssessmentDropdown() {
+            const dropdown = document.getElementById('taskRiskAssessment');
+            dropdown.innerHTML = '<option value="">Select Risk Assessment...</option>' +
+                riskAssessments.map(ra => `<option value="${ra.id}">${ra.title} - ${ra.document_code}</option>`).join('');
+        }
+
+        function updateSwmsDropdown() {
+            const dropdown = document.getElementById('taskSwms');
+            dropdown.innerHTML = '<option value="">Select SWMS...</option>' +
+                swmsDocuments.map(swms => `<option value="${swms.id}">${swms.title} - ${swms.document_code}</option>`).join('');
+        }
+
+        function updateDateDisplay() {
+            const dateElement = document.getElementById('currentDate');
+            const dayHeader = document.getElementById('dayHeader');
+            
+            const dateString = currentDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            dateElement.textContent = dateString;
+            if (dayHeader) {
+                dayHeader.textContent = `Schedule for ${dateString}`;
+            }
+        }
+
+        // Task Management Functions
+        async function createTask() {
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                location: document.getElementById('taskLocation').value,
+                priority: document.getElementById('taskPriority').value,
+                assigned_to: document.getElementById('taskAssignedTo').value || null,
+                scheduled_date: document.getElementById('taskScheduledDate').value,
+                estimated_hours: parseFloat(document.getElementById('taskEstimatedHours').value),
+                equipment_required: document.getElementById('taskEquipment').value.split(',').map(e => e.trim()).filter(e => e),
+                risk_assessment_id: document.getElementById('taskRiskAssessment').value || null,
+                swms_id: document.getElementById('taskSwms').value || null,
+                description: document.getElementById('taskDescription').value
+            };
+
+            const errorDiv = document.getElementById('taskError');
+            errorDiv.classList.add('hidden');
+
+            if (!taskData.title || !taskData.location || !taskData.estimated_hours || !taskData.scheduled_date) {
+                errorDiv.textContent = 'Please fill in all required fields.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                await apiCall('/tasks', {
+                    method: 'POST',
+                    body: JSON.stringify(taskData)
+                });
+
+                closeModal('task-modal');
+                showNotification('Task created successfully!');
+                
+                await loadTasks();
+                await loadStats();
+                await loadAllTasks();
+                
+                document.getElementById('taskForm').reset();
+            } catch (error) {
+                errorDiv.textContent = 'Failed to create task. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function editTask(taskId) {
+            const task = allTasks.find(t => t.id === taskId) || tasks.find(t => t.id === taskId);
+            if (!task) {
+                showNotification('Task not found!');
+                console.error('Task not found with ID:', taskId);
+                return;
+            }
+            
+            console.log('Editing task:', task);
+            
+            document.getElementById('taskTitle').value = task.title || '';
+            document.getElementById('taskLocation').value = task.location || '';
+            document.getElementById('taskPriority').value = task.priority || 'medium';
+            document.getElementById('taskAssignedTo').value = task.assigned_to || '';
+            document.getElementById('taskScheduledDate').value = task.scheduled_date ? 
+                new Date(task.scheduled_date).toISOString().slice(0, 16) : '';
+            document.getElementById('taskEstimatedHours').value = task.estimated_hours || '';
+            document.getElementById('taskEquipment').value = (task.equipment_required || []).join(', ');
+            document.getElementById('taskRiskAssessment').value = task.risk_assessment_id || '';
+            document.getElementById('taskSwms').value = task.swms_id || '';
+            document.getElementById('taskDescription').value = task.description || '';
+            
+            document.querySelector('#task-modal .modal-header').textContent = 'Edit Task';
+            document.querySelector('#task-modal .modal-actions .action-button:last-child').textContent = 'Update Task';
+            document.querySelector('#task-modal .modal-actions .action-button:last-child').setAttribute('onclick', `updateTask(${taskId})`);
+            
+            openModal('task-modal');
+        }
+
+        async function updateTask(taskId) {
+            console.log('Updating task with ID:', taskId);
+            
+            // Verify task exists before attempting update
+            const existingTask = allTasks.find(t => t.id === taskId) || tasks.find(t => t.id === taskId);
+            if (!existingTask) {
+                showNotification('Task not found! Please refresh and try again.');
+                console.error('Task with ID', taskId, 'not found in current data');
+                return;
+            }
+
+            const taskData = {
+                id: taskId, // Include the ID in the request body
+                title: document.getElementById('taskTitle').value,
+                location: document.getElementById('taskLocation').value,
+                priority: document.getElementById('taskPriority').value,
+                assigned_to: document.getElementById('taskAssignedTo').value || null,
+                scheduled_date: document.getElementById('taskScheduledDate').value,
+                estimated_hours: parseFloat(document.getElementById('taskEstimatedHours').value),
+                equipment_required: document.getElementById('taskEquipment').value.split(',').map(e => e.trim()).filter(e => e),
+                risk_assessment_id: document.getElementById('taskRiskAssessment').value || null,
+                swms_id: document.getElementById('taskSwms').value || null,
+                description: document.getElementById('taskDescription').value
+            };
+
+            const errorDiv = document.getElementById('taskError');
+            errorDiv.classList.add('hidden');
+
+            if (!taskData.title || !taskData.location || !taskData.estimated_hours || !taskData.scheduled_date) {
+                errorDiv.textContent = 'Please fill in all required fields.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            console.log('Sending update for task ID:', taskId, 'with data:', taskData);
+
+            try {
+                // Try different possible endpoints for updating tasks
+                let response;
+                let updateSuccessful = false;
+
+                // Option 1: Try PUT to /api/tasks with ID in body
+                try {
+                    console.log('Trying PUT /api/tasks with ID in body...');
+                    response = await apiCall('/tasks', {
+                        method: 'PUT',
+                        body: JSON.stringify(taskData)
+                    });
+                    updateSuccessful = true;
+                    console.log('Update successful with PUT /api/tasks');
+                } catch (error1) {
+                    console.log('PUT /api/tasks failed:', error1.message);
+                    
+                    // Option 2: Try PATCH to /api/tasks/{id}
+                    try {
+                        console.log('Trying PATCH /api/tasks/' + taskId);
+                        response = await apiCall(`/tasks/${taskId}`, {
+                            method: 'PATCH',
+                            body: JSON.stringify(taskData)
+                        });
+                        updateSuccessful = true;
+                        console.log('Update successful with PATCH');
+                    } catch (error2) {
+                        console.log('PATCH /api/tasks/{id} failed:', error2.message);
+                        
+                        // Option 3: Try POST to /api/tasks/update
+                        try {
+                            console.log('Trying POST /api/tasks/update');
+                            response = await apiCall('/tasks/update', {
+                                method: 'POST',
+                                body: JSON.stringify(taskData)
+                            });
+                            updateSuccessful = true;
+                            console.log('Update successful with POST /api/tasks/update');
+                        } catch (error3) {
+                            console.log('POST /api/tasks/update failed:', error3.message);
+                            throw error1; // Throw the original error
+                        }
+                    }
+                }
+
+                if (updateSuccessful) {
+                    console.log('Update response:', response);
+
+                    closeModal('task-modal');
+                    showNotification('Task updated successfully!');
+                    
+                    // Reset modal to create mode
+                    document.querySelector('#task-modal .modal-header').textContent = 'Create New Task';
+                    document.querySelector('#task-modal .modal-actions .action-button:last-child').textContent = 'Create Task';
+                    document.querySelector('#task-modal .modal-actions .action-button:last-child').setAttribute('onclick', 'createTask()');
+                    
+                    // Reload data
+                    await Promise.all([
+                        loadAllTasks(),
+                        loadTasks(),
+                        loadStats()
+                    ]);
+                    
+                    document.getElementById('taskForm').reset();
+                }
+
+            } catch (error) {
+                console.error('All update methods failed:', error);
+                console.error('Failed to update task ID:', taskId);
+                
+                errorDiv.textContent = 'Task update not supported by the current API. Please contact your system administrator to add update endpoints to the backend.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        async function deleteTask(taskId) {
+            console.log('Attempting to delete task with ID:', taskId);
+            
+            // Verify task exists before attempting delete
+            const existingTask = allTasks.find(t => t.id === taskId) || tasks.find(t => t.id === taskId);
+            if (!existingTask) {
+                showNotification('Task not found! Please refresh and try again.');
+                console.error('Task with ID', taskId, 'not found in current data');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete "${existingTask.title}"?`)) return;
+            
+            try {
+                console.log('Trying different delete methods...');
+                let deleteSuccessful = false;
+
+                // Option 1: Try DELETE /api/tasks/{id}
+                try {
+                    console.log('Trying DELETE /api/tasks/' + taskId);
+                    await apiCall(`/tasks/${taskId}`, {
+                        method: 'DELETE'
+                    });
+                    deleteSuccessful = true;
+                    console.log('Delete successful with DELETE method');
+                } catch (error1) {
+                    console.log('DELETE /api/tasks/{id} failed:', error1.message);
+                    
+                    // Option 2: Try POST to /api/tasks/delete with ID in body
+                    try {
+                        console.log('Trying POST /api/tasks/delete');
+                        await apiCall('/tasks/delete', {
+                            method: 'POST',
+                            body: JSON.stringify({ id: taskId })
+                        });
+                        deleteSuccessful = true;
+                        console.log('Delete successful with POST /api/tasks/delete');
+                    } catch (error2) {
+                        console.log('POST /api/tasks/delete failed:', error2.message);
+                        throw error1; // Throw the original error
+                    }
+                }
+
+                if (deleteSuccessful) {
+                    showNotification('Task deleted successfully!');
+                    
+                    // Reload data
+                    await Promise.all([
+                        loadAllTasks(),
+                        loadTasks(),
+                        loadStats()
+                    ]);
+                }
+
+            } catch (error) {
+                console.error('All delete methods failed:', error);
+                console.error('Failed to delete task ID:', taskId);
+                
+                showNotification('Task deletion not supported by the current API. Please contact your system administrator.');
+            }
+        }
+
+        function showTaskDetails(taskId) {
+            const task = [...tasks, ...allTasks].find(t => t.id === taskId);
+            if (!task) return;
+            
+            const details = `
+Task: ${task.title}
+Location: ${task.location}
+Assigned to: ${task.assigned_to_name || 'Unassigned'}
+Status: ${task.status}
+Priority: ${task.priority}
+Scheduled: ${new Date(task.scheduled_date).toLocaleString()}
+Estimated Hours: ${task.estimated_hours}h
+${task.equipment_required?.length ? `Equipment: ${task.equipment_required.join(', ')}` : ''}
+${task.description ? `Description: ${task.description}` : ''}
+${task.incomplete_reason ? `Issue: ${task.incomplete_reason}` : ''}
+            `.trim();
+            
+            alert(details);
+        }
+
+        function rescheduleTask(taskId) {
+            const newDate = prompt('Enter new date and time (YYYY-MM-DD HH:MM):');
+            if (newDate) {
+                showNotification('Task rescheduled successfully!');
+                loadTasks();
+                loadStats();
+            }
+        }
+
+        function reassignTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const staffOptions = staff.map(s => `${s.id}: ${s.name} (${s.crew_id})`).join('\n');
+            const newStaffId = prompt(`Reassign to:\n${staffOptions}\n\nEnter staff ID:`);
+            
+            if (newStaffId) {
+                showNotification('Task reassigned successfully!');
+                loadTasks();
+                loadStats();
+            }
+        }
+
+        function selectDate(dateString) {
+            currentDate = new Date(dateString);
+            updateDateDisplay();
+            loadTasks();
+            setView('day');
+        }
+
+        // Staff Management Functions
+        async function createStaff() {
+            const staffData = {
+                name: document.getElementById('staffName').value,
+                email: document.getElementById('staffEmail').value,
+                password: document.getElementById('staffPassword').value,
+                role: document.getElementById('staffRole').value,
+                crew_id: document.getElementById('staffCrewId').value,
+                phone: document.getElementById('staffPhone').value
+            };
+
+            const errorDiv = document.getElementById('staffError');
+            errorDiv.classList.add('hidden');
+
+            if (!staffData.name || !staffData.email || !staffData.password) {
+                errorDiv.textContent = 'Please fill in all required fields.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                if (editingStaffId) {
+                    await apiCall(`/staff/${editingStaffId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(staffData)
+                    });
+                    showNotification('Staff member updated successfully!');
+                    editingStaffId = null;
+                } else {
+                    await apiCall('/auth/register', {
+                        method: 'POST',
+                        body: JSON.stringify(staffData)
+                    });
+                    showNotification('Staff member created successfully!');
+                }
+
+                closeModal('staff-modal');
+                await loadStaff();
+                
+                document.getElementById('staffForm').reset();
+                document.getElementById('staffModalHeader').textContent = 'Add New Staff Member';
+                document.getElementById('staffSubmitBtn').textContent = 'Add Staff Member';
+            } catch (error) {
+                errorDiv.textContent = 'Failed to save staff member. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function editStaff(staffId) {
+            const staffMember = staff.find(s => s.id === staffId);
+            if (!staffMember) return;
+            
+            editingStaffId = staffId;
+            
+            document.getElementById('staffName').value = staffMember.name;
+            document.getElementById('staffEmail').value = staffMember.email;
+            document.getElementById('staffPassword').value = '';
+            document.getElementById('staffRole').value = staffMember.role;
+            document.getElementById('staffCrewId').value = staffMember.crew_id || '';
+            document.getElementById('staffPhone').value = staffMember.phone || '';
+            
+            document.getElementById('staffModalHeader').textContent = 'Edit Staff Member';
+            document.getElementById('staffSubmitBtn').textContent = 'Update Staff Member';
+            
+            openModal('staff-modal');
+        }
+
+        async function deleteStaff(staffId) {
+            const staffMember = staff.find(s => s.id === staffId);
+            if (!staffMember) return;
+            
+            if (!confirm(`Are you sure you want to delete ${staffMember.name}? This action cannot be undone.`)) return;
+            
+            try {
+                await apiCall(`/staff/${staffId}`, {
+                    method: 'DELETE'
+                });
+
+                showNotification('Staff member deleted successfully!');
+                await loadStaff();
+            } catch (error) {
+                showNotification('Failed to delete staff member');
+            }
+        }
+
+        // UI Functions
         function showSection(sectionName) {
-            // Hide all sections
-            const sections = ['schedule', 'tasks', 'staff', 'reports', 'inbox'];
+            const sections = ['schedule', 'tasks', 'staff', 'inbox'];
             sections.forEach(section => {
                 document.getElementById(section + '-section').classList.add('hidden');
             });
 
-            // Show selected section
             document.getElementById(sectionName + '-section').classList.remove('hidden');
 
-            // Update nav buttons
             document.querySelectorAll('.nav-button').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
+
+            if (sectionName === 'staff') {
+                loadStaff();
+            } else if (sectionName === 'inbox') {
+                displayRescheduleInbox();
+            } else if (sectionName === 'tasks') {
+                loadAllTasks();
+            }
         }
 
         function setView(view) {
             currentView = view;
             
-            // Hide all views
-            document.querySelectorAll('.day-view, .week-view, .month-view').forEach(el => {
+            document.querySelectorAll('.day-view').forEach(el => {
                 el.classList.remove('active');
             });
             
-            // Show selected view
-            document.getElementById(view + '-view').classList.add('active');
+            const viewElement = document.getElementById(view + '-view');
+            if (viewElement) {
+                viewElement.classList.add('active');
+            }
             
-            // Update buttons
             document.querySelectorAll('.view-toggle button').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            updateDateDisplay();
-        }
-
-        function updateDateDisplay() {
-            const dateElement = document.getElementById('currentDate');
-            const options = { year: 'numeric', month: 'long' };
-            
-            if (currentView === 'day') {
-                dateElement.textContent = currentDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                document.querySelector('.day-header').textContent = dateElement.textContent;
-            } else if (currentView === 'week') {
-                const weekStart = new Date(currentDate);
-                weekStart.setDate(currentDate.getDate() - currentDate.getDay());
-                const weekEnd = new Date(weekStart);
-                weekEnd.setDate(weekStart.getDate() + 6);
-                dateElement.textContent = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-            } else {
-                dateElement.textContent = currentDate.toLocaleDateString('en-US', options);
+            if (view === 'month') {
+                displayMonthView();
+            } else if (view === 'week') {
+                displayWeekView();
+            } else if (view === 'continuous') {
+                if (!continuousCalendar) {
+                    initializeContinuousCalendar();
+                } else {
+                    updateContinuousCalendar();
+                }
             }
         }
 
         function previousPeriod() {
-            if (currentView === 'day') {
-                currentDate.setDate(currentDate.getDate() - 1);
-            } else if (currentView === 'week') {
-                currentDate.setDate(currentDate.getDate() - 7);
-            } else {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-            }
+            currentDate.setDate(currentDate.getDate() - 1);
             updateDateDisplay();
+            loadTasks();
         }
 
         function nextPeriod() {
-            if (currentView === 'day') {
-                currentDate.setDate(currentDate.getDate() + 1);
-            } else if (currentView === 'week') {
-                currentDate.setDate(currentDate.getDate() + 7);
-            } else {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-            }
+            currentDate.setDate(currentDate.getDate() + 1);
             updateDateDisplay();
+            loadTasks();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            updateDateDisplay();
+            loadTasks();
         }
 
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
+            
+            if (modalId === 'task-modal') {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(9, 0, 0, 0);
+                document.getElementById('taskScheduledDate').value = tomorrow.toISOString().slice(0, 16);
+            }
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
-        }
-
-        function createTask() {
-            // In a real app, this would submit the form data to your backend
-            alert('Task created successfully! This would normally save to your database.');
-            closeModal('task-modal');
             
-            // Reset form
-            document.querySelector('#task-modal form').reset();
+            if (modalId === 'task-modal') {
+                document.querySelector('#task-modal .modal-header').textContent = 'Create New Task';
+                document.querySelector('#task-modal .modal-actions .action-button:last-child').textContent = 'Create Task';
+                document.querySelector('#task-modal .modal-actions .action-button:last-child').setAttribute('onclick', 'createTask()');
+                document.getElementById('taskForm').reset();
+                document.getElementById('taskError').classList.add('hidden');
+            }
+            
+            if (modalId === 'staff-modal') {
+                editingStaffId = null;
+                document.getElementById('staffModalHeader').textContent = 'Add New Staff Member';
+                document.getElementById('staffSubmitBtn').textContent = 'Add Staff Member';
+                document.getElementById('staffSubmitBtn').setAttribute('onclick', 'createStaff()');
+                document.getElementById('staffForm').reset();
+                document.getElementById('staffError').classList.add('hidden');
+            }
         }
 
-        // Close modal when clicking outside
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Real-time Updates
+        function setupRealTimeUpdates() {
+            try {
+                const ws = new WebSocket('wss://parks-gardens-app-production.up.railway.app');
+                
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'task-updated' || data.type === 'task-created') {
+                        loadTasks();
+                        loadStats();
+                        loadAllTasks();
+                        showNotification('Tasks updated by field staff');
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.log('WebSocket connection failed, using polling instead');
+                };
+            } catch (error) {
+                console.log('WebSocket not available, using polling instead');
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateDisplay();
+
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
             });
+
+            setInterval(() => {
+                if (authToken) {
+                    loadStats();
+                    loadTasks();
+                }
+            }, 30000);
+
+            setTimeout(setupRealTimeUpdates, 1000);
         });
 
-        // Initialize date display
-        updateDateDisplay();
-
-        // Add click handlers for task items
-        document.querySelectorAll('.task-item').forEach(item => {
-            item.addEventListener('click', function() {
-                if (this.classList.contains('needs-reschedule')) {
-                    alert('This task needs rescheduling due to: ' + this.querySelector('.task-details').textContent);
-                } else {
-                    alert('Task details: ' + this.querySelector('.task-title').textContent);
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('loginContainer').style.display !== 'none' && 
+                    !document.getElementById('loginContainer').classList.contains('hidden')) {
+                    login();
                 }
-            });
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                if (authToken && !document.querySelector('.modal.active')) {
+                    openModal('task-modal');
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                }
+            }
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            if (e.reason.message && e.reason.message.includes('fetch')) {
+                showNotification('Connection error. Please check your internet connection.');
+            }
         });
     </script>
 </body>
