@@ -511,34 +511,93 @@ app.delete('/api/staff/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if user has any tasks assigned
-    const tasksCheck = await pool.query(
-      'SELECT COUNT(*) as task_count FROM tasks WHERE assigned_to = $1',
+    // Get the staff member details for logging
+    const staffMember = await pool.query(
+      'SELECT name, email FROM users WHERE id = $1',
       [id]
     );
 
-    if (parseInt(tasksCheck.rows[0].task_count) > 0) {
-      return res.status(400).json({ 
-        error: 'Cannot delete staff member with assigned tasks. Please reassign their tasks first.' 
-      });
-    }
-
-    const deletedStaff = await pool.query(
-      'DELETE FROM users WHERE id = $1 RETURNING id, name, email',
-      [id]
-    );
-
-    if (deletedStaff.rows.length === 0) {
+    if (staffMember.rows.length === 0) {
       return res.status(404).json({ error: 'Staff member not found' });
     }
 
-    // Emit real-time update
-    io.emit('staff-deleted', { id: parseInt(id) });
+    // Start a database transaction to ensure all operations succeed or fail together
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
 
-    res.status(204).send(); // No content response for successful delete
+      // Find all tasks assigned to this staff member
+      const assignedTasks = await client.query(
+        'SELECT id, title, status FROM tasks WHERE assigned_to = $1',
+        [id]
+      );
+
+      // Update all their assigned tasks
+      if (assignedTasks.rows.length > 0) {
+        // Unassign tasks and move incomplete ones to reschedule inbox
+        await client.query(
+          `UPDATE tasks SET 
+            assigned_to = NULL,
+            status = CASE 
+              WHEN status IN ('assigned', 'in-progress') THEN 'needs-rescheduling'
+              ELSE status
+            END,
+            incomplete_reason = CASE 
+              WHEN status IN ('assigned', 'in-progress') THEN CONCAT('Staff member ', $2, ' was removed from the system')
+              ELSE incomplete_reason
+            END,
+            updated_at = NOW()
+          WHERE assigned_to = $1`,
+          [id, staffMember.rows[0].name]
+        );
+
+        console.log(`Unassigned ${assignedTasks.rows.length} tasks from deleted staff member: ${staffMember.rows[0].name}`);
+      }
+
+      // Delete the staff member
+      const deletedStaff = await client.query(
+        'DELETE FROM users WHERE id = $1 RETURNING id, name, email',
+        [id]
+      );
+
+      // Commit the transaction
+      await client.query('COMMIT');
+
+      // Emit real-time updates
+      io.emit('staff-deleted', { 
+        id: parseInt(id),
+        reassignedTasks: assignedTasks.rows.length 
+      });
+
+      // If tasks were reassigned, emit task updates too
+      if (assignedTasks.rows.length > 0) {
+        io.emit('tasks-reassigned', {
+          count: assignedTasks.rows.length,
+          reason: `Staff member ${staffMember.rows[0].name} was deleted`
+        });
+      }
+
+      res.json({
+        message: `Staff member deleted successfully`,
+        deletedStaff: deletedStaff.rows[0],
+        reassignedTasks: assignedTasks.rows.length,
+        taskDetails: assignedTasks.rows.length > 0 ? 
+          `${assignedTasks.rows.length} tasks were unassigned and moved to reschedule inbox` : 
+          'No tasks were assigned to this staff member'
+      });
+
+    } catch (error) {
+      // Rollback the transaction on error
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Delete staff error:', err);
+    res.status(500).json({ error: 'Server error while deleting staff member' });
   }
 });
 
