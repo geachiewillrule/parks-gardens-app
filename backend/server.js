@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
 // Register user
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { email, password, name, role, crew_id } = req.body;
+    const { email, password, name, role, crew_id, phone } = req.body;
     
     // Check if user exists
     const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -92,8 +92,8 @@ app.post('/api/auth/register', async (req, res) => {
 
     // Create user
     const newUser = await pool.query(
-      'INSERT INTO users (email, password, name, role, crew_id, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, email, name, role, crew_id',
-      [email, hashedPassword, name, role, crew_id]
+      'INSERT INTO users (email, password, name, role, crew_id, phone, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id, email, name, role, crew_id, phone',
+      [email, hashedPassword, name, role, crew_id, phone]
     );
 
     // Generate JWT
@@ -196,6 +196,33 @@ app.get('/api/tasks', authenticateToken, async (req, res) => {
   }
 });
 
+// Get single task by ID
+app.get('/api/tasks/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const task = await pool.query(`
+      SELECT t.*, u.name as assigned_to_name, u.crew_id,
+             ra.title as risk_assessment_title, ra.hazards, ra.controls,
+             s.title as swms_title, s.steps, s.ppe
+      FROM tasks t
+      LEFT JOIN users u ON t.assigned_to = u.id
+      LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
+      LEFT JOIN swms s ON t.swms_id = s.id
+      WHERE t.id = $1
+    `, [id]);
+
+    if (task.rows.length === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json(task.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Create new task
 app.post('/api/tasks', authenticateToken, async (req, res) => {
   try {
@@ -231,6 +258,83 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
     io.emit('task-created', newTask.rows[0]);
 
     res.status(201).json(newTask.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update entire task
+app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      location,
+      estimated_hours,
+      priority,
+      assigned_to,
+      scheduled_date,
+      equipment_required,
+      risk_assessment_id,
+      swms_id
+    } = req.body;
+
+    const updatedTask = await pool.query(
+      `UPDATE tasks SET 
+        title = $1,
+        description = $2,
+        location = $3,
+        estimated_hours = $4,
+        priority = $5,
+        assigned_to = $6,
+        scheduled_date = $7,
+        equipment_required = $8,
+        risk_assessment_id = $9,
+        swms_id = $10,
+        updated_at = NOW()
+      WHERE id = $11 
+      RETURNING *`,
+      [
+        title, description, location, estimated_hours, priority,
+        assigned_to, scheduled_date, equipment_required, risk_assessment_id,
+        swms_id, id
+      ]
+    );
+
+    if (updatedTask.rows.length === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Emit real-time update
+    io.emit('task-updated', updatedTask.rows[0]);
+
+    res.json(updatedTask.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Delete task
+app.delete('/api/tasks/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedTask = await pool.query(
+      'DELETE FROM tasks WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (deletedTask.rows.length === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Emit real-time update
+    io.emit('task-deleted', { id: parseInt(id) });
+
+    res.status(204).send(); // No content response for successful delete
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -299,7 +403,7 @@ app.get('/api/swms', authenticateToken, async (req, res) => {
 app.get('/api/staff', authenticateToken, async (req, res) => {
   try {
     const staff = await pool.query(`
-      SELECT id, name, email, role, crew_id, created_at
+      SELECT id, name, email, role, crew_id, phone, created_at
       FROM users 
       WHERE role = 'field_staff'
       ORDER BY name
@@ -310,37 +414,6 @@ app.get('/api/staff', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
-// Get user's tasks (for mobile app)
-app.get('/api/my-tasks', authenticateToken, async (req, res) => {
-  try {
-    const { date } = req.query;
-    let query = `
-      SELECT t.*, 
-             ra.title as risk_assessment_title, ra.hazards, ra.controls,
-             s.title as swms_title, s.steps, s.ppe
-      FROM tasks t
-      LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms s ON t.swms_id = s.id
-      WHERE t.assigned_to = $1
-    `;
-    const params = [req.user.id];
-
-    if (date) {
-      query += ' AND DATE(t.scheduled_date) = $2';
-      params.push(date);
-    }
-
-    query += ' ORDER BY t.scheduled_date ASC';
-
-    const tasks = await pool.query(query, params);
-    res.json(tasks.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-// Add these after your existing staff routes (around line 280)
 
 // Get single staff member by ID
 app.get('/api/staff/:id', authenticateToken, async (req, res) => {
@@ -547,6 +620,36 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
+// Get user's tasks (for mobile app)
+app.get('/api/my-tasks', authenticateToken, async (req, res) => {
+  try {
+    const { date } = req.query;
+    let query = `
+      SELECT t.*, 
+             ra.title as risk_assessment_title, ra.hazards, ra.controls,
+             s.title as swms_title, s.steps, s.ppe
+      FROM tasks t
+      LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
+      LEFT JOIN swms s ON t.swms_id = s.id
+      WHERE t.assigned_to = $1
+    `;
+    const params = [req.user.id];
+
+    if (date) {
+      query += ' AND DATE(t.scheduled_date) = $2';
+      params.push(date);
+    }
+
+    query += ' ORDER BY t.scheduled_date ASC';
+
+    const tasks = await pool.query(query, params);
+    res.json(tasks.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ==================== DASHBOARD STATS ====================
 
 // Get dashboard statistics
@@ -569,6 +672,21 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// ==================== TEST ENDPOINT ====================
+
+// Test deployment endpoint
+app.get('/api/test-deployment', (req, res) => {
+  res.json({ 
+    message: 'All endpoints deployed successfully!', 
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      tasks: ['GET /api/tasks', 'GET /api/tasks/:id', 'POST /api/tasks', 'PUT /api/tasks/:id', 'DELETE /api/tasks/:id'],
+      staff: ['GET /api/staff', 'GET /api/staff/:id', 'PUT /api/staff/:id', 'DELETE /api/staff/:id'],
+      auth: ['POST /api/auth/login', 'POST /api/auth/register']
+    }
+  });
 });
 
 // ==================== START SERVER ====================
