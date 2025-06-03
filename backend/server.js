@@ -679,7 +679,7 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Get user's tasks (for mobile app)
+// Get user's tasks (for mobile app) - TIMEZONE AWARE VERSION
 app.get('/api/my-tasks', authenticateToken, async (req, res) => {
   try {
     const { date } = req.query;
@@ -695,16 +695,31 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     const params = [req.user.id];
 
     if (date) {
-      query += ' AND DATE(t.scheduled_date) = $2';
-      params.push(date);
+      // Convert date filtering to work with Australian timezone
+      // Create start and end of day in Australian timezone
+      const startOfDay = `${date}T00:00:00+10:00`; // Start of day in AEST
+      const endOfDay = `${date}T23:59:59.999+10:00`;   // End of day in AEST
+      
+      console.log(`Filtering tasks for date: ${date}`);
+      console.log(`Start of day (AEST): ${startOfDay}`);
+      console.log(`End of day (AEST): ${endOfDay}`);
+      
+      query += ' AND t.scheduled_date >= $2 AND t.scheduled_date <= $3';
+      params.push(startOfDay, endOfDay);
     }
 
     query += ' ORDER BY t.scheduled_date ASC';
 
+    console.log('Executing query:', query);
+    console.log('With parameters:', params);
+
     const tasks = await pool.query(query, params);
+    
+    console.log(`Found ${tasks.rows.length} tasks for user ${req.user.id} on date ${date}`);
+    
     res.json(tasks.rows);
   } catch (err) {
-    console.error(err);
+    console.error('Error in /api/my-tasks:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
