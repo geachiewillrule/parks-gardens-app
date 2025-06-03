@@ -695,14 +695,13 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     const params = [req.user.id];
 
     if (date) {
-      // Convert date filtering to work with Australian timezone
-      // Create start and end of day in Australian timezone
-      const startOfDay = `${date}T00:00:00+10:00`; // Start of day in AEST
-      const endOfDay = `${date}T23:59:59.999+10:00`;   // End of day in AEST
+      // Use AEDT timezone (+11:00) instead of AEST (+10:00)
+      const startOfDay = `${date}T00:00:00+11:00`; // Start of day in AEDT
+      const endOfDay = `${date}T23:59:59.999+11:00`;   // End of day in AEDT
       
       console.log(`Filtering tasks for date: ${date}`);
-      console.log(`Start of day (AEST): ${startOfDay}`);
-      console.log(`End of day (AEST): ${endOfDay}`);
+      console.log(`Start of day (AEDT): ${startOfDay}`);
+      console.log(`End of day (AEDT): ${endOfDay}`);
       
       query += ' AND t.scheduled_date >= $2 AND t.scheduled_date <= $3';
       params.push(startOfDay, endOfDay);
@@ -716,6 +715,9 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     const tasks = await pool.query(query, params);
     
     console.log(`Found ${tasks.rows.length} tasks for user ${req.user.id} on date ${date}`);
+    tasks.rows.forEach(task => {
+      console.log(`Task: ${task.title}, Scheduled: ${task.scheduled_date}`);
+    });
     
     res.json(tasks.rows);
   } catch (err) {
