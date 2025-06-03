@@ -679,7 +679,7 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Get user's tasks (for mobile app) - TIMEZONE AWARE VERSION
+// Get user's tasks (for mobile app) - POSTGRESQL TIMEZONE VERSION
 app.get('/api/my-tasks', authenticateToken, async (req, res) => {
   try {
     const { date } = req.query;
@@ -695,16 +695,11 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     const params = [req.user.id];
 
     if (date) {
-      // Use AEDT timezone (+11:00) instead of AEST (+10:00)
-      const startOfDay = `${date}T00:00:00+11:00`; // Start of day in AEDT
-      const endOfDay = `${date}T23:59:59.999+11:00`;   // End of day in AEDT
+      // Use PostgreSQL's timezone conversion
+      query += ` AND DATE(t.scheduled_date AT TIME ZONE 'UTC' AT TIME ZONE 'Australia/Sydney') = $2`;
+      params.push(date);
       
-      console.log(`Filtering tasks for date: ${date}`);
-      console.log(`Start of day (AEDT): ${startOfDay}`);
-      console.log(`End of day (AEDT): ${endOfDay}`);
-      
-      query += ' AND t.scheduled_date >= $2 AND t.scheduled_date <= $3';
-      params.push(startOfDay, endOfDay);
+      console.log(`Filtering tasks for date: ${date} using PostgreSQL timezone conversion`);
     }
 
     query += ' ORDER BY t.scheduled_date ASC';
