@@ -262,12 +262,12 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
         
-        // FIX: Handle equipment_required properly
-        Array.isArray(equipment_required) ? JSON.stringify(equipment_required) : JSON.stringify([]),
+        // equipment_required is ARRAY type - pass array directly
+        Array.isArray(equipment_required) ? equipment_required : [],
         
-        // Handle machinery arrays
-        Array.isArray(large_plant_required) ? JSON.stringify(large_plant_required) : JSON.stringify([]),
-        Array.isArray(small_plant_required) ? JSON.stringify(small_plant_required) : JSON.stringify([]),
+        // large_plant_required and small_plant_required are JSONB - pass objects directly
+        large_plant_required || [],
+        small_plant_required || [],
         
         risk_assessment_id, swms_id, recurring_type, req.user.id
       ]
@@ -332,12 +332,12 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
         
-        // FIX: Handle equipment_required properly
-        Array.isArray(equipment_required) ? JSON.stringify(equipment_required) : JSON.stringify([]),
+        // equipment_required is ARRAY type - pass array directly
+        Array.isArray(equipment_required) ? equipment_required : [],
         
-        // Handle machinery arrays
-        Array.isArray(large_plant_required) ? JSON.stringify(large_plant_required) : JSON.stringify([]),
-        Array.isArray(small_plant_required) ? JSON.stringify(small_plant_required) : JSON.stringify([]),
+        // large_plant_required and small_plant_required are JSONB - pass objects directly
+        large_plant_required || [],
+        small_plant_required || [],
         
         risk_assessment_id, swms_id, recurring_type, status, incomplete_reason, id
       ]
