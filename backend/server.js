@@ -235,6 +235,8 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       assigned_to,
       scheduled_date,
       equipment_required,
+      large_plant_required,      // ADD THIS
+      small_plant_required,      // ADD THIS
       risk_assessment_id,
       swms_id,
       recurring_type
@@ -243,14 +245,18 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
     const newTask = await pool.query(
       `INSERT INTO tasks (
         title, description, location, estimated_hours, priority,
-        assigned_to, scheduled_date, equipment_required, risk_assessment_id,
-        swms_id, recurring_type, status, created_by, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'assigned', $12, NOW())
+        assigned_to, scheduled_date, equipment_required, 
+        large_plant_required, small_plant_required,
+        risk_assessment_id, swms_id, recurring_type, status, created_by, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'assigned', $14, NOW())
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
-        assigned_to, scheduled_date, equipment_required, risk_assessment_id,
-        swms_id, recurring_type, req.user.id
+        assigned_to, scheduled_date, 
+        JSON.stringify(equipment_required || []),
+        JSON.stringify(large_plant_required || []),    // ADD THIS
+        JSON.stringify(small_plant_required || []),    // ADD THIS
+        risk_assessment_id, swms_id, recurring_type, req.user.id
       ]
     );
 
@@ -277,6 +283,8 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       assigned_to,
       scheduled_date,
       equipment_required,
+      large_plant_required,      // ADD THIS
+      small_plant_required,      // ADD THIS
       risk_assessment_id,
       swms_id,
       recurring_type,
@@ -296,18 +304,23 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         assigned_to = $6,
         scheduled_date = $7,
         equipment_required = $8,
-        risk_assessment_id = $9,
-        swms_id = $10,
-        recurring_type = $11,
-        status = $12,
-        incomplete_reason = $13,
+        large_plant_required = $9,        -- ADD THIS
+        small_plant_required = $10,       -- ADD THIS
+        risk_assessment_id = $11,
+        swms_id = $12,
+        recurring_type = $13,
+        status = $14,
+        incomplete_reason = $15,
         updated_at = NOW()
-      WHERE id = $14 
+      WHERE id = $16 
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
-        assigned_to, scheduled_date, equipment_required, risk_assessment_id,
-        swms_id, recurring_type, status, incomplete_reason, id
+        assigned_to, scheduled_date, 
+        JSON.stringify(equipment_required || []),
+        JSON.stringify(large_plant_required || []),    // ADD THIS
+        JSON.stringify(small_plant_required || []),    // ADD THIS
+        risk_assessment_id, swms_id, recurring_type, status, incomplete_reason, id
       ]
     );
 
