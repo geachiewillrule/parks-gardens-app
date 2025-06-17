@@ -235,12 +235,20 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       assigned_to,
       scheduled_date,
       equipment_required,
-      large_plant_required,      // ADD THIS
-      small_plant_required,      // ADD THIS
+      large_plant_required,
+      small_plant_required,
       risk_assessment_id,
       swms_id,
       recurring_type
     } = req.body;
+
+    // ADD DEBUG LOGGING
+    console.log('📥 Received task data:', {
+      title,
+      equipment_required,
+      large_plant_required,
+      small_plant_required
+    });
 
     const newTask = await pool.query(
       `INSERT INTO tasks (
@@ -253,9 +261,14 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
-        JSON.stringify(equipment_required || []),
-        JSON.stringify(large_plant_required || []),    // ADD THIS
-        JSON.stringify(small_plant_required || []),    // ADD THIS
+        
+        // FIX: Handle equipment_required properly
+        Array.isArray(equipment_required) ? JSON.stringify(equipment_required) : JSON.stringify([]),
+        
+        // Handle machinery arrays
+        Array.isArray(large_plant_required) ? JSON.stringify(large_plant_required) : JSON.stringify([]),
+        Array.isArray(small_plant_required) ? JSON.stringify(small_plant_required) : JSON.stringify([]),
+        
         risk_assessment_id, swms_id, recurring_type, req.user.id
       ]
     );
@@ -265,7 +278,8 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
 
     res.status(201).json(newTask.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error('❌ Task creation error:', err);
+    console.error('❌ Request body:', req.body);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -283,8 +297,8 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       assigned_to,
       scheduled_date,
       equipment_required,
-      large_plant_required,      // ADD THIS
-      small_plant_required,      // ADD THIS
+      large_plant_required,
+      small_plant_required,
       risk_assessment_id,
       swms_id,
       recurring_type,
@@ -304,8 +318,8 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         assigned_to = $6,
         scheduled_date = $7,
         equipment_required = $8,
-        large_plant_required = $9,        -- ADD THIS
-        small_plant_required = $10,       -- ADD THIS
+        large_plant_required = $9,
+        small_plant_required = $10,
         risk_assessment_id = $11,
         swms_id = $12,
         recurring_type = $13,
@@ -317,9 +331,14 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
-        JSON.stringify(equipment_required || []),
-        JSON.stringify(large_plant_required || []),    // ADD THIS
-        JSON.stringify(small_plant_required || []),    // ADD THIS
+        
+        // FIX: Handle equipment_required properly
+        Array.isArray(equipment_required) ? JSON.stringify(equipment_required) : JSON.stringify([]),
+        
+        // Handle machinery arrays
+        Array.isArray(large_plant_required) ? JSON.stringify(large_plant_required) : JSON.stringify([]),
+        Array.isArray(small_plant_required) ? JSON.stringify(small_plant_required) : JSON.stringify([]),
+        
         risk_assessment_id, swms_id, recurring_type, status, incomplete_reason, id
       ]
     );
