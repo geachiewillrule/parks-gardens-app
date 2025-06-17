@@ -731,6 +731,154 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
   }
 });
 
+// ==================== MACHINERY ROUTES ====================
+
+// Get all machinery
+app.get('/api/machinery', authenticateToken, async (req, res) => {
+  try {
+    const { classification, status, category } = req.query;
+    let query = `
+      SELECT e.*, 
+             COUNT(tm.id) as task_count,
+             COALESCE(SUM(tm.hours_used), 0) as total_task_hours
+      FROM equipment e
+      LEFT JOIN task_machinery tm ON e.id = tm.equipment_id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramCount = 1;
+
+    if (classification) {
+      query += ` AND e.classification = $${paramCount}`;
+      params.push(classification);
+      paramCount++;
+    }
+
+    if (status) {
+      query += ` AND e.status = $${paramCount}`;
+      params.push(status);
+      paramCount++;
+    }
+
+    if (category) {
+      query += ` AND e.category = $${paramCount}`;
+      params.push(category);
+      paramCount++;
+    }
+
+    query += ' GROUP BY e.id ORDER BY e.name ASC';
+
+    const machinery = await pool.query(query, params);
+    res.json(machinery.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get machinery task history
+app.get('/api/machinery/:id/history', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const history = await pool.query(`
+      SELECT t.id, t.title, t.location, t.scheduled_date, t.status,
+             tm.hours_used, tm.assigned_at, tm.returned_at, tm.notes,
+             tm.cost_code, tm.department_code, tm.project_code,
+             u.name as assigned_to_name
+      FROM task_machinery tm
+      JOIN tasks t ON tm.task_id = t.id
+      LEFT JOIN users u ON t.assigned_to = u.id
+      WHERE tm.equipment_id = $1
+      ORDER BY tm.assigned_at DESC
+      LIMIT 50
+    `, [id]);
+
+    res.json(history.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Create new machinery
+app.post('/api/machinery', authenticateToken, async (req, res) => {
+  try {
+    const {
+      name, type, classification, category, manufacturer, model,
+      asset_number, cost_code, hourly_rate, location, notes
+    } = req.body;
+
+    const newMachinery = await pool.query(
+      `INSERT INTO equipment (
+        name, type, classification, category, manufacturer, model,
+        asset_number, cost_code, hourly_rate, location, notes, status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'available')
+      RETURNING *`,
+      [name, type, classification, category, manufacturer, model,
+       asset_number, cost_code, hourly_rate, location, notes]
+    );
+
+    res.status(201).json(newMachinery.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Update machinery
+app.put('/api/machinery/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name, type, classification, category, manufacturer, model,
+      asset_number, cost_code, status, hourly_rate, location, notes
+    } = req.body;
+
+    const updatedMachinery = await pool.query(
+      `UPDATE equipment SET 
+        name = $1, type = $2, classification = $3, category = $4,
+        manufacturer = $5, model = $6, asset_number = $7, cost_code = $8,
+        status = $9, hourly_rate = $10, location = $11, notes = $12, 
+        updated_at = NOW()
+      WHERE id = $13 
+      RETURNING *`,
+      [name, type, classification, category, manufacturer, model,
+       asset_number, cost_code, status, hourly_rate, location, notes, id]
+    );
+
+    if (updatedMachinery.rows.length === 0) {
+      return res.status(404).json({ error: 'Machinery not found' });
+    }
+
+    res.json(updatedMachinery.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Delete machinery
+app.delete('/api/machinery/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedMachinery = await pool.query(
+      'DELETE FROM equipment WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (deletedMachinery.rows.length === 0) {
+      return res.status(404).json({ error: 'Machinery not found' });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ==================== DASHBOARD STATS ====================
 
 // Get dashboard statistics
