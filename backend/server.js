@@ -278,8 +278,20 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       scheduled_date,
       equipment_required,
       risk_assessment_id,
-      swms_id
+      swms_id,
+      recurring_type,
+      status,
+      incomplete_reason
     } = req.body;
+
+    // Log the incoming data for debugging
+    console.log(`🔄 Updating task ${id}:`, {
+      title,
+      status,
+      incomplete_reason,
+      scheduled_date,
+      assigned_to
+    });
 
     const updatedTask = await pool.query(
       `UPDATE tasks SET 
@@ -293,13 +305,16 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         equipment_required = $8,
         risk_assessment_id = $9,
         swms_id = $10,
+        recurring_type = $11,
+        status = COALESCE($12, status),
+        incomplete_reason = CASE WHEN $13 IS NULL THEN NULL ELSE $13 END,
         updated_at = NOW()
-      WHERE id = $11 
+      WHERE id = $14 
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, equipment_required, risk_assessment_id,
-        swms_id, id
+        swms_id, recurring_type, status, incomplete_reason, id
       ]
     );
 
@@ -307,12 +322,15 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
+    // Log the result
+    console.log(`✅ Task ${id} updated. Final status: ${updatedTask.rows[0].status}, incomplete_reason: ${updatedTask.rows[0].incomplete_reason}`);
+
     // Emit real-time update
     io.emit('task-updated', updatedTask.rows[0]);
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error('❌ Task update error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
