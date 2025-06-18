@@ -544,9 +544,24 @@ app.delete('/api/safety-documents/risk-assessments/:id', authenticateToken, asyn
 // Upload file for risk assessment
 app.post('/api/safety-documents/risk-assessments/:id/upload', upload.single('file'), async (req, res) => {
   try {
+    console.log('📁 File upload attempt:', req.file);
+    console.log('📁 Upload directory exists?');
+    
     const { id } = req.params;
-    const { filename, size } = req.file;
+    const { filename, size, path: uploadPath } = req.file;
+    
+    console.log('📁 File saved to:', uploadPath);
+    console.log('📁 File size:', size);
+    
     const filePath = `/backend/uploads/safety-documents/risk-assessments/${filename}`;
+    
+    // Check if file actually exists
+    try {
+      await fs.access(uploadPath);
+      console.log('✅ File exists on disk at:', uploadPath);
+    } catch (error) {
+      console.log('❌ File NOT found on disk at:', uploadPath);
+    }
     
     await pool.query(`
       UPDATE risk_assessments 
