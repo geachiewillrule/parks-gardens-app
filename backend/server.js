@@ -199,7 +199,7 @@ app.get('/api/tasks', authenticateToken, async (req, res) => {
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms_documents s ON t.swms_id = s.id
+      LEFT JOIN swms s ON t.swms_id = s.id
       WHERE 1=1
     `;
     const params = [];
@@ -245,7 +245,7 @@ app.get('/api/tasks/:id', authenticateToken, async (req, res) => {
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms_documents s ON t.swms_id = s.id
+      LEFT JOIN swms s ON t.swms_id = s.id
       WHERE t.id = $1
     `, [id]);
 
@@ -1023,7 +1023,7 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
              s.title as swms_title, s.steps, s.ppe
       FROM tasks t
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms_documents s ON t.swms_id = s.id
+      LEFT JOIN swms s ON t.swms_id = s.id
       WHERE t.assigned_to = $1
     `;
     const params = [req.user.id];
