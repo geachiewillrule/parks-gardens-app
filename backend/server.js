@@ -6,6 +6,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const http = require('http');
 const socketIo = require('socket.io');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
 require('dotenv').config();
 
 const app = express();
@@ -40,6 +43,40 @@ pool.connect((err, client, release) => {
   } else {
     console.log('✅ Database connected successfully');
     release();
+  }
+});
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const uploadDir = path.join('/backend/uploads/safety-documents', req.baseUrl.includes('risk-assessments') ? 'risk-assessments' : 'swms');
+    
+    // Create directory if it doesn't exist
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+    } catch (error) {
+      console.error('Error creating upload directory:', error);
+    }
+    
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const docId = req.params.id;
+    const ext = path.extname(file.originalname);
+    const timestamp = Date.now();
+    cb(null, `${docId}_${timestamp}${ext}`);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'));
+    }
   }
 });
 
@@ -162,7 +199,7 @@ app.get('/api/tasks', authenticateToken, async (req, res) => {
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms s ON t.swms_id = s.id
+      LEFT JOIN swms_documents s ON t.swms_id = s.id
       WHERE 1=1
     `;
     const params = [];
@@ -208,7 +245,7 @@ app.get('/api/tasks/:id', authenticateToken, async (req, res) => {
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms s ON t.swms_id = s.id
+      LEFT JOIN swms_documents s ON t.swms_id = s.id
       WHERE t.id = $1
     `, [id]);
 
@@ -415,9 +452,279 @@ app.put('/api/tasks/:id/status', authenticateToken, async (req, res) => {
   }
 });
 
-// ==================== SAFETY DOCUMENT ROUTES ====================
+// ==================== ENHANCED SAFETY DOCUMENT ROUTES ====================
 
 // Get risk assessments
+app.get('/api/safety-documents/risk-assessments', authenticateToken, async (req, res) => {
+  try {
+    const riskAssessments = await pool.query(`
+      SELECT * FROM risk_assessments 
+      ORDER BY created_at DESC
+    `);
+    res.json(riskAssessments.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Create risk assessment
+app.post('/api/safety-documents/risk-assessments', authenticateToken, async (req, res) => {
+  try {
+    const { title, document_code, category, risk_level, review_date, approval_status, description } = req.body;
+    
+    const result = await pool.query(`
+      INSERT INTO risk_assessments (title, document_code, category, risk_level, review_date, approval_status, description, uploaded_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [title, document_code, category, risk_level, review_date, approval_status, description, req.user.id]);
+    
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating risk assessment:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Update risk assessment
+app.put('/api/safety-documents/risk-assessments/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, document_code, category, risk_level, review_date, approval_status, description } = req.body;
+    
+    const result = await pool.query(`
+      UPDATE risk_assessments 
+      SET title = $1, document_code = $2, category = $3, risk_level = $4, 
+          review_date = $5, approval_status = $6, description = $7
+      WHERE id = $8
+      RETURNING *
+    `, [title, document_code, category, risk_level, review_date, approval_status, description, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Risk assessment not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating risk assessment:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete risk assessment
+app.delete('/api/safety-documents/risk-assessments/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get file path before deleting
+    const doc = await pool.query('SELECT file_path FROM risk_assessments WHERE id = $1', [id]);
+    
+    const result = await pool.query('DELETE FROM risk_assessments WHERE id = $1 RETURNING *', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Risk assessment not found' });
+    }
+    
+    // Delete file if it exists
+    if (doc.rows[0]?.file_path) {
+      try {
+        await fs.unlink(path.join('/backend', doc.rows[0].file_path));
+      } catch (error) {
+        console.log('File deletion failed (file may not exist):', error.message);
+      }
+    }
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting risk assessment:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Upload file for risk assessment
+app.post('/api/safety-documents/risk-assessments/:id/upload', upload.single('file'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { filename, size } = req.file;
+    const filePath = `/uploads/safety-documents/risk-assessments/${filename}`;
+    
+    await pool.query(`
+      UPDATE risk_assessments 
+      SET file_path = $1, file_size = $2, upload_date = CURRENT_TIMESTAMP
+      WHERE id = $3
+    `, [filePath, size, id]);
+    
+    res.json({ message: 'File uploaded successfully', file_path: filePath });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Download risk assessment file
+app.get('/api/safety-documents/risk-assessments/:id/download', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(`
+      SELECT file_path, title FROM risk_assessments WHERE id = $1
+    `, [id]);
+    
+    if (!result.rows[0] || !result.rows[0].file_path) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    const filePath = path.join('/backend', result.rows[0].file_path);
+    const fileName = `${result.rows[0].title}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+    
+    const fileStream = require('fs').createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get SWMS documents
+app.get('/api/safety-documents/swms', authenticateToken, async (req, res) => {
+  try {
+    const swms = await pool.query(`
+      SELECT * FROM swms_documents 
+      ORDER BY created_at DESC
+    `);
+    res.json(swms.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Create SWMS
+app.post('/api/safety-documents/swms', authenticateToken, async (req, res) => {
+  try {
+    const { title, document_code, activity_type, risk_level, review_date, approval_status, description } = req.body;
+    
+    const result = await pool.query(`
+      INSERT INTO swms_documents (title, document_code, activity_type, risk_level, review_date, approval_status, description, uploaded_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [title, document_code, activity_type, risk_level, review_date, approval_status, description, req.user.id]);
+    
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating SWMS:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Update SWMS
+app.put('/api/safety-documents/swms/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, document_code, activity_type, risk_level, review_date, approval_status, description } = req.body;
+    
+    const result = await pool.query(`
+      UPDATE swms_documents 
+      SET title = $1, document_code = $2, activity_type = $3, risk_level = $4, 
+          review_date = $5, approval_status = $6, description = $7
+      WHERE id = $8
+      RETURNING *
+    `, [title, document_code, activity_type, risk_level, review_date, approval_status, description, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'SWMS not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating SWMS:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete SWMS
+app.delete('/api/safety-documents/swms/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get file path before deleting
+    const doc = await pool.query('SELECT file_path FROM swms_documents WHERE id = $1', [id]);
+    
+    const result = await pool.query('DELETE FROM swms_documents WHERE id = $1 RETURNING *', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'SWMS not found' });
+    }
+    
+    // Delete file if it exists
+    if (doc.rows[0]?.file_path) {
+      try {
+        await fs.unlink(path.join('/backend', doc.rows[0].file_path));
+      } catch (error) {
+        console.log('File deletion failed (file may not exist):', error.message);
+      }
+    }
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting SWMS:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Upload file for SWMS
+app.post('/api/safety-documents/swms/:id/upload', upload.single('file'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { filename, size } = req.file;
+    const filePath = `/uploads/safety-documents/swms/${filename}`;
+    
+    await pool.query(`
+      UPDATE swms_documents 
+      SET file_path = $1, file_size = $2, upload_date = CURRENT_TIMESTAMP
+      WHERE id = $3
+    `, [filePath, size, id]);
+    
+    res.json({ message: 'File uploaded successfully', file_path: filePath });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Download SWMS file
+app.get('/api/safety-documents/swms/:id/download', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(`
+      SELECT file_path, title FROM swms_documents WHERE id = $1
+    `, [id]);
+    
+    if (!result.rows[0] || !result.rows[0].file_path) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    const filePath = path.join('/backend', result.rows[0].file_path);
+    const fileName = `${result.rows[0].title}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+    
+    const fileStream = require('fs').createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== LEGACY SAFETY DOCUMENT ROUTES (for backward compatibility) ====================
+
+// Get risk assessments (legacy route)
 app.get('/api/risk-assessments', authenticateToken, async (req, res) => {
   try {
     const riskAssessments = await pool.query('SELECT * FROM risk_assessments ORDER BY title');
@@ -428,10 +735,10 @@ app.get('/api/risk-assessments', authenticateToken, async (req, res) => {
   }
 });
 
-// Get SWMS documents
+// Get SWMS documents (legacy route)
 app.get('/api/swms', authenticateToken, async (req, res) => {
   try {
-    const swms = await pool.query('SELECT * FROM swms ORDER BY title');
+    const swms = await pool.query('SELECT * FROM swms_documents ORDER BY title');
     res.json(swms.rows);
   } catch (err) {
     console.error(err);
@@ -503,21 +810,6 @@ app.put('/api/staff/:id', authenticateToken, async (req, res) => {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       
-      updateQuery = `
-        UPDATE users SET 
-          name = $1,
-          email = $2,
-          role = $3,
-          crew_id = $4,
-          phone = $5,
-          password = $6,
-          updated_at = NOW()
-        WHERE id = $7 
-        RETURNING id, name, email, role, crew_id, phone, created_at
-      `;
-      params = [name, email, role, crew_id, phone, hashedPassword, id];
-    } else {
-      // Update without changing password
       updateQuery = `
         UPDATE users SET 
           name = $1,
@@ -731,7 +1023,7 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
              s.title as swms_title, s.steps, s.ppe
       FROM tasks t
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
-      LEFT JOIN swms s ON t.swms_id = s.id
+      LEFT JOIN swms_documents s ON t.swms_id = s.id
       WHERE t.assigned_to = $1
     `;
     const params = [req.user.id];
@@ -781,19 +1073,19 @@ app.get('/api/machinery', authenticateToken, async (req, res) => {
     let paramCount = 1;
 
     if (classification) {
-      query += ` AND e.classification = $${paramCount}`;
+      query += ` AND e.classification = ${paramCount}`;
       params.push(classification);
       paramCount++;
     }
 
     if (status) {
-      query += ` AND e.status = $${paramCount}`;
+      query += ` AND e.status = ${paramCount}`;
       params.push(status);
       paramCount++;
     }
 
     if (category) {
-      query += ` AND e.category = $${paramCount}`;
+      query += ` AND e.category = ${paramCount}`;
       params.push(category);
       paramCount++;
     }
@@ -945,7 +1237,8 @@ app.get('/api/test-deployment', (req, res) => {
     endpoints: {
       tasks: ['GET /api/tasks', 'GET /api/tasks/:id', 'POST /api/tasks', 'PUT /api/tasks/:id', 'DELETE /api/tasks/:id'],
       staff: ['GET /api/staff', 'GET /api/staff/:id', 'PUT /api/staff/:id', 'DELETE /api/staff/:id'],
-      auth: ['POST /api/auth/login', 'POST /api/auth/register']
+      auth: ['POST /api/auth/login', 'POST /api/auth/register'],
+      safetyDocuments: ['GET /api/safety-documents/risk-assessments', 'POST /api/safety-documents/risk-assessments', 'GET /api/safety-documents/swms', 'POST /api/safety-documents/swms']
     }
   });
 });
@@ -958,6 +1251,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Mobile API: http://localhost:${PORT}/api`);
   console.log(`💻 Dashboard API: http://localhost:${PORT}/api`);
+  console.log(`🛡️ Safety Documents API: http://localhost:${PORT}/api/safety-documents`);
 });
 
 // Graceful shutdown
@@ -967,4 +1261,4 @@ process.on('SIGTERM', () => {
     console.log('HTTP server closed');
     pool.end();
   });
-});
+}); 
