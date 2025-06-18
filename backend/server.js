@@ -589,7 +589,7 @@ app.get('/api/safety-documents/risk-assessments/:id/download', async (req, res) 
       return res.status(404).json({ error: 'File not found' });
     }
     
-    const filePath = path.join('/backend', result.rows[0].file_path);
+    const filePath = result.rows[0].file_path;
     const fileName = `${result.rows[0].title}.pdf`;
     
     // Check if file exists
@@ -751,7 +751,7 @@ app.get('/api/safety-documents/swms/:id/download', async (req, res) => {
       return res.status(404).json({ error: 'File not found' });
     }
     
-    const filePath = path.join('/backend', result.rows[0].file_path);
+    const filePath = result.rows[0].file_path;
     const fileName = `${result.rows[0].title}.pdf`;
     
     // Check if file exists
