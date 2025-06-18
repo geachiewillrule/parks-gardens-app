@@ -562,8 +562,23 @@ app.post('/api/safety-documents/risk-assessments/:id/upload', upload.single('fil
 });
 
 // Download risk assessment file
-app.get('/api/safety-documents/risk-assessments/:id/download', authenticateToken, async (req, res) => {
+app.get('/api/safety-documents/risk-assessments/:id/download', async (req, res) => {
   try {
+    // Check for token in query parameter for iframe viewing OR in header
+    const token = req.query.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // Verify token
+    let user;
+    try {
+      user = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    } catch (err) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    
     const { id } = req.params;
     
     const result = await pool.query(`
@@ -577,10 +592,23 @@ app.get('/api/safety-documents/risk-assessments/:id/download', authenticateToken
     const filePath = path.join('/backend', result.rows[0].file_path);
     const fileName = `${result.rows[0].title}.pdf`;
     
+    // Check if file exists
+    try {
+      await fs.access(filePath);
+    } catch (error) {
+      console.error('File not found on disk:', filePath);
+      return res.status(404).json({ error: 'File not found on disk' });
+    }
+    
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
     
     const fileStream = require('fs').createReadStream(filePath);
+    fileStream.on('error', (error) => {
+      console.error('Error streaming file:', error);
+      res.status(500).json({ error: 'Error reading file' });
+    });
+    
     fileStream.pipe(res);
   } catch (error) {
     console.error('Error downloading file:', error);
@@ -696,8 +724,23 @@ app.post('/api/safety-documents/swms/:id/upload', upload.single('file'), async (
 });
 
 // Download SWMS file
-app.get('/api/safety-documents/swms/:id/download', authenticateToken, async (req, res) => {
+app.get('/api/safety-documents/swms/:id/download', async (req, res) => {
   try {
+    // Check for token in query parameter for iframe viewing OR in header
+    const token = req.query.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // Verify token
+    let user;
+    try {
+      user = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    } catch (err) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    
     const { id } = req.params;
     
     const result = await pool.query(`
@@ -711,10 +754,23 @@ app.get('/api/safety-documents/swms/:id/download', authenticateToken, async (req
     const filePath = path.join('/backend', result.rows[0].file_path);
     const fileName = `${result.rows[0].title}.pdf`;
     
+    // Check if file exists
+    try {
+      await fs.access(filePath);
+    } catch (error) {
+      console.error('File not found on disk:', filePath);
+      return res.status(404).json({ error: 'File not found on disk' });
+    }
+    
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
     
     const fileStream = require('fs').createReadStream(filePath);
+    fileStream.on('error', (error) => {
+      console.error('Error streaming file:', error);
+      res.status(500).json({ error: 'Error reading file' });
+    });
+    
     fileStream.pipe(res);
   } catch (error) {
     console.error('Error downloading file:', error);
