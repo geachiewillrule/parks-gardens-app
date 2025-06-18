@@ -553,7 +553,7 @@ app.post('/api/safety-documents/risk-assessments/:id/upload', upload.single('fil
     console.log('📁 File saved to:', uploadPath);
     console.log('📁 File size:', size);
     
-    const filePath = `/backend/uploads/safety-documents/risk-assessments/${filename}`;
+    const filePath = uploadPath; // ← CHANGED THIS LINE
     
     // Check if file actually exists
     try {
@@ -722,8 +722,8 @@ app.delete('/api/safety-documents/swms/:id', authenticateToken, async (req, res)
 app.post('/api/safety-documents/swms/:id/upload', upload.single('file'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { filename, size } = req.file;
-    const filePath = `/backend/uploads/safety-documents/swms/${filename}`;
+    const { filename, size, path: uploadPath } = req.file; 
+    const filePath = uploadPath; 
     
     await pool.query(`
       UPDATE swms_documents 
