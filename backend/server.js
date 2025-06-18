@@ -546,7 +546,7 @@ app.post('/api/safety-documents/risk-assessments/:id/upload', upload.single('fil
   try {
     const { id } = req.params;
     const { filename, size } = req.file;
-    const filePath = `/uploads/safety-documents/risk-assessments/${filename}`;
+    const filePath = `/backend/uploads/safety-documents/risk-assessments/${filename}`;
     
     await pool.query(`
       UPDATE risk_assessments 
@@ -708,7 +708,7 @@ app.post('/api/safety-documents/swms/:id/upload', upload.single('file'), async (
   try {
     const { id } = req.params;
     const { filename, size } = req.file;
-    const filePath = `/uploads/safety-documents/swms/${filename}`;
+    const filePath = `/backend/uploads/safety-documents/swms/${filename}`;
     
     await pool.query(`
       UPDATE swms_documents 
