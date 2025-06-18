@@ -195,7 +195,7 @@ app.get('/api/tasks', authenticateToken, async (req, res) => {
     let query = `
       SELECT t.*, u.name as assigned_to_name, u.crew_id,
              ra.title as risk_assessment_title, ra.hazards, ra.controls,
-             s.title as swms_title, s.steps, s.ppe
+             s.title as swms_title
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
@@ -241,7 +241,7 @@ app.get('/api/tasks/:id', authenticateToken, async (req, res) => {
     const task = await pool.query(`
       SELECT t.*, u.name as assigned_to_name, u.crew_id,
              ra.title as risk_assessment_title, ra.hazards, ra.controls,
-             s.title as swms_title, s.steps, s.ppe
+             s.title as swms_title
       FROM tasks t
       LEFT JOIN users u ON t.assigned_to = u.id
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
@@ -1020,7 +1020,7 @@ app.get('/api/my-tasks', authenticateToken, async (req, res) => {
     let query = `
       SELECT t.*, 
              ra.title as risk_assessment_title, ra.hazards, ra.controls,
-             s.title as swms_title, s.steps, s.ppe
+             s.title as swms_title
       FROM tasks t
       LEFT JOIN risk_assessments ra ON t.risk_assessment_id = ra.id
       LEFT JOIN swms_documents s ON t.swms_id = s.id
