@@ -126,11 +126,12 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+/*
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   
-  socket.on('join-room', (room) => {
+  //socket.on('join-room', (room) => {
     socket.join(room);
     console.log(`User ${socket.id} joined room: ${room}`);
   });
@@ -139,6 +140,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
+*/
 
 // ==================== AUTH ROUTES ====================
 
@@ -338,7 +340,7 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
     );
 
     // Emit real-time update
-    io.emit('task-created', newTask.rows[0]);
+    // io.emit('task-created', newTask.rows[0]);
 
     res.status(201).json(newTask.rows[0]);
   } catch (err) {
@@ -409,7 +411,7 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    io.emit('task-updated', updatedTask.rows[0]);
+    // io.emit('task-updated', updatedTask.rows[0]);
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
@@ -433,7 +435,7 @@ app.delete('/api/tasks/:id', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    io.emit('task-deleted', { id: parseInt(id) });
+    // io.emit('task-deleted', { id: parseInt(id) });
 
     res.status(204).send(); // No content response for successful delete
   } catch (err) {
@@ -465,7 +467,7 @@ app.put('/api/tasks/:id/status', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    io.emit('task-updated', updatedTask.rows[0]);
+    // io.emit('task-updated', updatedTask.rows[0]);
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
@@ -924,7 +926,7 @@ app.put('/api/staff/:id', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    io.emit('staff-updated', updatedStaff.rows[0]);
+    // io.emit('staff-updated', updatedStaff.rows[0]);
 
     res.json(updatedStaff.rows[0]);
   } catch (err) {
@@ -990,12 +992,14 @@ app.delete('/api/staff/:id', authenticateToken, async (req, res) => {
 
       // Commit the transaction
       await client.query('COMMIT');
-
+/*
       // Emit real-time updates
-      io.emit('staff-deleted', { 
+       io.emit('staff-deleted', { 
         id: parseInt(id),
         reassignedTasks: assignedTasks.rows.length 
       });
+      */
+
 
       // If tasks were reassigned, emit task updates too
       if (assignedTasks.rows.length > 0) {
