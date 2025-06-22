@@ -24,35 +24,6 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint for Railway
-app.get('/', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    service: 'parks-gardens-backend'
-  });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString() 
-  });
-});
-
-// Add comprehensive error handling
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('🚨 Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit in production, just log
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('🚨 Uncaught Exception:', error);
-  process.exit(1);
-});
-
-console.log('🔍 Server starting with error handlers...');
-
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -78,20 +49,19 @@ pool.connect((err, client, release) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    // Use a simpler temp directory that exists
-    const uploadDir = '/tmp/uploads';
+    const uploadDir = path.join('/backend/uploads/safety-documents', req.baseUrl.includes('risk-assessments') ? 'risk-assessments' : 'swms');
     
     // Create directory if it doesn't exist
     try {
       await fs.mkdir(uploadDir, { recursive: true });
-      cb(null, uploadDir);
     } catch (error) {
       console.error('Error creating upload directory:', error);
-      cb(error, null);
     }
+    
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const docId = req.params.id || 'temp';
+    const docId = req.params.id;
     const ext = path.extname(file.originalname);
     const timestamp = Date.now();
     cb(null, `${docId}_${timestamp}${ext}`);
@@ -126,12 +96,11 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-/*
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   
-  //socket.on('join-room', (room) => {
+  socket.on('join-room', (room) => {
     socket.join(room);
     console.log(`User ${socket.id} joined room: ${room}`);
   });
@@ -140,7 +109,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
-*/
 
 // ==================== AUTH ROUTES ====================
 
@@ -308,14 +276,15 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       small_plant_required,
       risk_assessment_id,
       swms_id,
-      recurring_type,
-      recurring_weekdays  // <-- ADD THIS LINE
+      recurring_type
     } = req.body;
 
+    // ADD DEBUG LOGGING
     console.log('📥 Received task data:', {
       title,
-      recurring_type,
-      recurring_weekdays  // <-- ADD THIS LINE
+      equipment_required,
+      large_plant_required,
+      small_plant_required
     });
 
     const newTask = await pool.query(
@@ -323,24 +292,26 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, equipment_required, 
         large_plant_required, small_plant_required,
-        risk_assessment_id, swms_id, recurring_type, recurring_weekdays,
-        status, created_by, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'assigned', $15, NOW())
+        risk_assessment_id, swms_id, recurring_type, status, created_by, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'assigned', $14, NOW())
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
+        
+        // equipment_required is ARRAY type - pass array directly
         Array.isArray(equipment_required) ? equipment_required : [],
+        
+        // large_plant_required and small_plant_required are JSONB - stringify them
         JSON.stringify(large_plant_required || []),
         JSON.stringify(small_plant_required || []),
-        risk_assessment_id, swms_id, recurring_type, 
-        JSON.stringify(recurring_weekdays || []),  // <-- ADD THIS LINE
-        req.user.id
+        
+        risk_assessment_id, swms_id, recurring_type, req.user.id
       ]
     );
 
     // Emit real-time update
-    // io.emit('task-created', newTask.rows[0]);
+    io.emit('task-created', newTask.rows[0]);
 
     res.status(201).json(newTask.rows[0]);
   } catch (err) {
@@ -368,10 +339,11 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       risk_assessment_id,
       swms_id,
       recurring_type,
-      recurring_weekdays,  // <-- ADD THIS LINE
       status,
       incomplete_reason
     } = req.body;
+
+    console.log(`🔄 Updating task ${id}:`, { status, incomplete_reason });
 
     const updatedTask = await pool.query(
       `UPDATE tasks SET 
@@ -388,21 +360,23 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         risk_assessment_id = $11,
         swms_id = $12,
         recurring_type = $13,
-        recurring_weekdays = $14,  // <-- ADD THIS LINE
-        status = $15,
-        incomplete_reason = $16,
+        status = $14,
+        incomplete_reason = $15,
         updated_at = NOW()
-      WHERE id = $17 
+      WHERE id = $16 
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
+        
+        // equipment_required is ARRAY type - pass array directly
         Array.isArray(equipment_required) ? equipment_required : [],
+        
+        // large_plant_required and small_plant_required are JSONB - stringify them
         JSON.stringify(large_plant_required || []),
         JSON.stringify(small_plant_required || []),
-        risk_assessment_id, swms_id, recurring_type,
-        JSON.stringify(recurring_weekdays || []),  // <-- ADD THIS LINE
-        status, incomplete_reason, id
+        
+        risk_assessment_id, swms_id, recurring_type, status, incomplete_reason, id
       ]
     );
 
@@ -410,8 +384,10 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
+    console.log(`✅ Task ${id} updated. New status: ${updatedTask.rows[0].status}`);
+
     // Emit real-time update
-    // io.emit('task-updated', updatedTask.rows[0]);
+    io.emit('task-updated', updatedTask.rows[0]);
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
@@ -435,7 +411,7 @@ app.delete('/api/tasks/:id', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    // io.emit('task-deleted', { id: parseInt(id) });
+    io.emit('task-deleted', { id: parseInt(id) });
 
     res.status(204).send(); // No content response for successful delete
   } catch (err) {
@@ -467,7 +443,7 @@ app.put('/api/tasks/:id/status', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    // io.emit('task-updated', updatedTask.rows[0]);
+    io.emit('task-updated', updatedTask.rows[0]);
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
@@ -926,7 +902,7 @@ app.put('/api/staff/:id', authenticateToken, async (req, res) => {
     }
 
     // Emit real-time update
-    // io.emit('staff-updated', updatedStaff.rows[0]);
+    io.emit('staff-updated', updatedStaff.rows[0]);
 
     res.json(updatedStaff.rows[0]);
   } catch (err) {
@@ -992,14 +968,12 @@ app.delete('/api/staff/:id', authenticateToken, async (req, res) => {
 
       // Commit the transaction
       await client.query('COMMIT');
-/*
+
       // Emit real-time updates
-       io.emit('staff-deleted', { 
+      io.emit('staff-deleted', { 
         id: parseInt(id),
         reassignedTasks: assignedTasks.rows.length 
       });
-      */
-
 
       // If tasks were reassigned, emit task updates too
       if (assignedTasks.rows.length > 0) {
@@ -1342,12 +1316,13 @@ app.get('/api/test-deployment', (req, res) => {
 
 // ==================== START SERVER ====================
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔍 Railway PORT: ${process.env.PORT}`);
-  console.log(`🔍 Binding to: 0.0.0.0:${PORT}`);
+  console.log(`📱 Mobile API: http://localhost:${PORT}/api`);
+  console.log(`💻 Dashboard API: http://localhost:${PORT}/api`);
+  console.log(`🛡️ Safety Documents API: http://localhost:${PORT}/api/safety-documents`);
 });
 
 // Graceful shutdown
