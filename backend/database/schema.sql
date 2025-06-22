@@ -1,5 +1,5 @@
 -- database/schema.sql
--- Parks & Gardens Database Schema
+-- Parks & Gardens Database Schema - Updated
 
 -- Create database (run this first as superuser)
 -- CREATE DATABASE parks_gardens;
@@ -27,6 +27,14 @@ CREATE TABLE risk_assessments (
     hazards TEXT[] NOT NULL,
     controls TEXT[] NOT NULL,
     risk_level VARCHAR(20) CHECK (risk_level IN ('low', 'medium', 'high', 'extreme')),
+    category VARCHAR(100),
+    review_date DATE,
+    approval_status VARCHAR(50) DEFAULT 'draft',
+    description TEXT,
+    file_path VARCHAR(500),
+    file_size INTEGER,
+    upload_date TIMESTAMP,
+    uploaded_by INTEGER REFERENCES users(id),
     created_by INTEGER REFERENCES users(id),
     valid_until DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -34,12 +42,21 @@ CREATE TABLE risk_assessments (
 );
 
 -- SWMS (Safe Work Method Statements) table
-CREATE TABLE swms (
+CREATE TABLE swms_documents (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     document_code VARCHAR(50) UNIQUE NOT NULL,
-    steps TEXT[] NOT NULL,
-    ppe TEXT[] NOT NULL,
+    activity_type VARCHAR(100),
+    risk_level VARCHAR(20) CHECK (risk_level IN ('low', 'medium', 'high')),
+    review_date DATE,
+    approval_status VARCHAR(50) DEFAULT 'draft',
+    description TEXT,
+    file_path VARCHAR(500),
+    file_size INTEGER,
+    upload_date TIMESTAMP,
+    uploaded_by INTEGER REFERENCES users(id),
+    steps TEXT[],
+    ppe TEXT[],
     equipment_required TEXT[],
     created_by INTEGER REFERENCES users(id),
     valid_until DATE,
@@ -51,9 +68,18 @@ CREATE TABLE swms (
 CREATE TABLE equipment (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    type VARCHAR(100) NOT NULL,
+    type VARCHAR(100),
+    classification VARCHAR(50) CHECK (classification IN ('large_plant', 'small_plant')),
+    category VARCHAR(100),
+    manufacturer VARCHAR(100),
+    model VARCHAR(100),
+    asset_number VARCHAR(100),
+    cost_code VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'available' CHECK (status IN ('available', 'in_use', 'maintenance', 'out_of_service')),
+    hourly_rate DECIMAL(8,2),
+    location VARCHAR(255),
+    notes TEXT,
     serial_number VARCHAR(100),
-    status VARCHAR(50) DEFAULT 'available' CHECK (status IN ('available', 'in-use', 'maintenance', 'retired')),
     last_service_date DATE,
     next_service_due DATE,
     current_location VARCHAR(255),
@@ -78,14 +104,29 @@ CREATE TABLE tasks (
     end_time TIMESTAMP,
     actual_hours DECIMAL(4,2),
     equipment_required TEXT[],
+    large_plant_required JSONB DEFAULT '[]'::jsonb,
+    small_plant_required JSONB DEFAULT '[]'::jsonb,
     risk_assessment_id INTEGER REFERENCES risk_assessments(id),
-    swms_id INTEGER REFERENCES swms(id),
+    swms_id INTEGER REFERENCES swms_documents(id),
     incomplete_reason TEXT,
     completion_notes TEXT,
-    recurring_type VARCHAR(20) CHECK (recurring_type IN ('none', 'daily', 'weekly', 'monthly')),
+    recurring_type VARCHAR(20) CHECK (recurring_type IN ('none', 'daily', 'weekdays', 'weekly', 'monthly')),
+    recurring_weekdays JSONB DEFAULT '[]'::jsonb,
     recurring_until DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Recurring task completions table
+CREATE TABLE recurring_task_completions (
+    id SERIAL PRIMARY KEY,
+    base_task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    instance_date DATE NOT NULL,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_by INTEGER REFERENCES users(id),
+    completion_notes TEXT,
+    actual_hours DECIMAL(4,2),
+    UNIQUE(base_task_id, instance_date)
 );
 
 -- Task Photos table (for completion evidence)
@@ -104,7 +145,7 @@ CREATE TABLE safety_acknowledgments (
     task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id),
     risk_assessment_id INTEGER REFERENCES risk_assessments(id),
-    swms_id INTEGER REFERENCES swms(id),
+    swms_id INTEGER REFERENCES swms_documents(id),
     acknowledged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ip_address INET,
     UNIQUE(task_id, user_id, risk_assessment_id, swms_id)
@@ -132,6 +173,20 @@ CREATE TABLE equipment_assignments (
     condition_notes TEXT
 );
 
+-- Task Machinery table (for large/small plant tracking)
+CREATE TABLE task_machinery (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+    equipment_id INTEGER REFERENCES equipment(id),
+    hours_used DECIMAL(4,2),
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    returned_at TIMESTAMP,
+    notes TEXT,
+    cost_code VARCHAR(50),
+    department_code VARCHAR(50),
+    project_code VARCHAR(50)
+);
+
 -- Notifications table
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
@@ -150,107 +205,8 @@ CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_equipment_status ON equipment(status);
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
-
--- Insert sample data
-
--- Sample users
-INSERT INTO users (email, password, name, role, crew_id) VALUES 
-('sarah.johnson@cityparks.gov', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Sarah Johnson', 'team_leader', 'EAST'),
-('john.smith@cityparks.gov', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'John Smith', 'field_staff', 'CREW2'),
-('mike.chen@cityparks.gov', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Mike Chen', 'field_staff', 'CREW2'),
-('lisa.wong@cityparks.gov', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Lisa Wong', 'field_staff', 'CREW3'),
-('david.kim@cityparks.gov', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'David Kim', 'field_staff', 'CREW1');
-
--- Sample Risk Assessments
-INSERT INTO risk_assessments (title, document_code, hazards, controls, risk_level, created_by, valid_until) VALUES 
-(
-    'Ride-on Mower Operation', 
-    'RA-2024-015',
-    ARRAY['Moving machinery parts', 'Noise exposure (85+ dB)', 'Fuel handling', 'Slopes and uneven terrain', 'Flying debris'],
-    ARRAY['Pre-start equipment inspection', 'Wear hearing protection', 'Maintain 10m exclusion zone', 'Check slope gradient <15°', 'Wear safety glasses and closed footwear'],
-    'medium',
-    1,
-    '2025-12-31'
-),
-(
-    'Hedge Trimming Near Traffic', 
-    'RA-2024-023',
-    ARRAY['Vehicle traffic proximity', 'Power tool operation', 'Flying debris', 'Repetitive strain', 'Sharp cutting blades'],
-    ARRAY['Install traffic control devices', 'Maintain 2m buffer from roadway', 'Regular tool maintenance', 'Rotate workers every 30 minutes', 'Blade guards and emergency stops'],
-    'high',
-    1,
-    '2025-12-31'
-);
-
--- Sample SWMS
-INSERT INTO swms (title, document_code, steps, ppe, equipment_required, created_by, valid_until) VALUES 
-(
-    'Large Area Mowing Procedure', 
-    'SWMS-2024-008',
-    ARRAY['Conduct pre-start safety check of mower', 'Inspect area for obstacles, debris, and hazards', 'Set up safety barriers and signage', 'Don required PPE (hearing, eye protection)', 'Start mowing following planned pattern', 'Maintain awareness of public and other workers', 'Complete post-operation checks and cleaning'],
-    ARRAY['Safety glasses', 'Hearing protection', 'High-vis vest', 'Closed shoes'],
-    ARRAY['Ride-on mower', 'Fuel container', 'Safety cones', 'First aid kit'],
-    1,
-    '2025-12-31'
-),
-(
-    'Roadside Hedge Maintenance', 
-    'SWMS-2024-012',
-    ARRAY['Set up traffic control (cones, signs)', 'Inspect hedge trimmer and safety features', 'Clear work area of pedestrians', 'Position spotter for traffic watch', 'Begin trimming from traffic-side outward', 'Collect and dispose of trimmings', 'Remove traffic control devices'],
-    ARRAY['High-vis vest', 'Safety glasses', 'Cut-resistant gloves', 'Hard hat'],
-    ARRAY['Hedge trimmer', 'Safety cones', 'Warning signs', 'Collection bags'],
-    1,
-    '2025-12-31'
-);
-
--- Sample Equipment
-INSERT INTO equipment (name, type, serial_number, status, last_service_date, next_service_due) VALUES 
-('Ride-on Mower #3', 'Mower', 'RM2024-003', 'available', '2024-05-20', '2024-08-20'),
-('Hedge Trimmer #2', 'Power Tool', 'HT2024-002', 'maintenance', '2024-05-15', '2024-06-15'),
-('Chainsaw #1', 'Power Tool', 'CS2024-001', 'available', '2024-05-10', '2024-06-01'),
-('Safety Cones (Set of 12)', 'Safety Equipment', 'SC2024-SET1', 'available', '2024-05-25', '2024-11-25');
-
--- Sample Tasks for today
-INSERT INTO tasks (title, description, location, estimated_hours, priority, assigned_to, created_by, scheduled_date, risk_assessment_id, swms_id, equipment_required) VALUES 
-(
-    'Mow Riverside Park - East Section',
-    'Weekly mowing of the eastern lawn areas including around playground and picnic areas',
-    'Riverside Park, East Lawn',
-    2.5,
-    'high',
-    2, -- John Smith
-    1, -- Created by Sarah Johnson
-    '2025-05-27 09:00:00',
-    1, -- Ride-on Mower RA
-    1, -- Large Area Mowing SWMS
-    ARRAY['Ride-on Mower #3', 'Fuel Container']
-),
-(
-    'Trim Hedges - Main Street Median',
-    'Trim overgrown hedges along Main Street median strip for visibility and aesthetics',
-    'Main Street Median Strip',
-    1.5,
-    'medium',
-    4, -- Lisa Wong
-    1, -- Created by Sarah Johnson
-    '2025-05-27 13:00:00',
-    2, -- Hedge Trimming RA
-    2, -- Roadside Hedge SWMS
-    ARRAY['Hedge Trimmer #2', 'Safety Cones']
-),
-(
-    'Plant Maintenance - Community Garden',
-    'Water, weed, and general maintenance of community garden plots A through D',
-    'Community Garden, Plot A-D',
-    3.0,
-    'low',
-    3, -- Mike Chen
-    1, -- Created by Sarah Johnson
-    '2025-05-27 10:00:00',
-    NULL,
-    NULL,
-    ARRAY['Hand Tools Set', 'Watering Equipment']
-);
+CREATE INDEX idx_recurring_completions_task_date ON recurring_task_completions(base_task_id, instance_date);
+CREATE INDEX idx_recurring_completions_date ON recurring_task_completions(instance_date);
 
 -- Update functions for automatic timestamp updates
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -266,4 +222,4 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECU
 CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_equipment_updated_at BEFORE UPDATE ON equipment FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_risk_assessments_updated_at BEFORE UPDATE ON risk_assessments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_swms_updated_at BEFORE UPDATE ON swms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_swms_documents_updated_at BEFORE UPDATE ON swms_documents FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
