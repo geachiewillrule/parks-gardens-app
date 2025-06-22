@@ -62,19 +62,20 @@ pool.connect((err, client, release) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    const uploadDir = path.join('/backend/uploads/safety-documents', req.baseUrl.includes('risk-assessments') ? 'risk-assessments' : 'swms');
+    // Use a simpler temp directory that exists
+    const uploadDir = '/tmp/uploads';
     
     // Create directory if it doesn't exist
     try {
       await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
     } catch (error) {
       console.error('Error creating upload directory:', error);
+      cb(error, null);
     }
-    
-    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const docId = req.params.id;
+    const docId = req.params.id || 'temp';
     const ext = path.extname(file.originalname);
     const timestamp = Date.now();
     cb(null, `${docId}_${timestamp}${ext}`);
