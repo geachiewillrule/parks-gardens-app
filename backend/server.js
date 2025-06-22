@@ -276,15 +276,14 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       small_plant_required,
       risk_assessment_id,
       swms_id,
-      recurring_type
+      recurring_type,
+      recurring_weekdays  // <-- ADD THIS LINE
     } = req.body;
 
-    // ADD DEBUG LOGGING
     console.log('📥 Received task data:', {
       title,
-      equipment_required,
-      large_plant_required,
-      small_plant_required
+      recurring_type,
+      recurring_weekdays  // <-- ADD THIS LINE
     });
 
     const newTask = await pool.query(
@@ -292,21 +291,19 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, equipment_required, 
         large_plant_required, small_plant_required,
-        risk_assessment_id, swms_id, recurring_type, status, created_by, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'assigned', $14, NOW())
+        risk_assessment_id, swms_id, recurring_type, recurring_weekdays,
+        status, created_by, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 'assigned', $15, NOW())
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
-        
-        // equipment_required is ARRAY type - pass array directly
         Array.isArray(equipment_required) ? equipment_required : [],
-        
-        // large_plant_required and small_plant_required are JSONB - stringify them
         JSON.stringify(large_plant_required || []),
         JSON.stringify(small_plant_required || []),
-        
-        risk_assessment_id, swms_id, recurring_type, req.user.id
+        risk_assessment_id, swms_id, recurring_type, 
+        JSON.stringify(recurring_weekdays || []),  // <-- ADD THIS LINE
+        req.user.id
       ]
     );
 
@@ -339,11 +336,10 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       risk_assessment_id,
       swms_id,
       recurring_type,
+      recurring_weekdays,  // <-- ADD THIS LINE
       status,
       incomplete_reason
     } = req.body;
-
-    console.log(`🔄 Updating task ${id}:`, { status, incomplete_reason });
 
     const updatedTask = await pool.query(
       `UPDATE tasks SET 
@@ -360,31 +356,27 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
         risk_assessment_id = $11,
         swms_id = $12,
         recurring_type = $13,
-        status = $14,
-        incomplete_reason = $15,
+        recurring_weekdays = $14,  // <-- ADD THIS LINE
+        status = $15,
+        incomplete_reason = $16,
         updated_at = NOW()
-      WHERE id = $16 
+      WHERE id = $17 
       RETURNING *`,
       [
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, 
-        
-        // equipment_required is ARRAY type - pass array directly
         Array.isArray(equipment_required) ? equipment_required : [],
-        
-        // large_plant_required and small_plant_required are JSONB - stringify them
         JSON.stringify(large_plant_required || []),
         JSON.stringify(small_plant_required || []),
-        
-        risk_assessment_id, swms_id, recurring_type, status, incomplete_reason, id
+        risk_assessment_id, swms_id, recurring_type,
+        JSON.stringify(recurring_weekdays || []),  // <-- ADD THIS LINE
+        status, incomplete_reason, id
       ]
     );
 
     if (updatedTask.rows.length === 0) {
       return res.status(404).json({ error: 'Task not found' });
     }
-
-    console.log(`✅ Task ${id} updated. New status: ${updatedTask.rows[0].status}`);
 
     // Emit real-time update
     io.emit('task-updated', updatedTask.rows[0]);
