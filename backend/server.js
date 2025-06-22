@@ -24,6 +24,19 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
+// Add comprehensive error handling
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🚨 Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit in production, just log
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('🚨 Uncaught Exception:', error);
+  process.exit(1);
+});
+
+console.log('🔍 Server starting with error handlers...');
+
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
