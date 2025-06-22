@@ -276,7 +276,8 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
       small_plant_required,
       risk_assessment_id,
       swms_id,
-      recurring_type
+      recurring_type,
+      recurring_weekdays 
     } = req.body;
 
     // ADD DEBUG LOGGING
@@ -292,7 +293,7 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
         title, description, location, estimated_hours, priority,
         assigned_to, scheduled_date, equipment_required, 
         large_plant_required, small_plant_required,
-        risk_assessment_id, swms_id, recurring_type, status, created_by, created_at
+        risk_assessment_id, swms_id, recurring_type, recurring_weekdays, status, created_by, created_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'assigned', $14, NOW())
       RETURNING *`,
       [
@@ -306,7 +307,9 @@ app.post('/api/tasks', authenticateToken, async (req, res) => {
         JSON.stringify(large_plant_required || []),
         JSON.stringify(small_plant_required || []),
         
-        risk_assessment_id, swms_id, recurring_type, req.user.id
+        risk_assessment_id, swms_id, recurring_type, 
+         JSON.stringify(recurring_weekdays || []),
+         req.user.id
       ]
     );
 
@@ -339,6 +342,7 @@ app.put('/api/tasks/:id', authenticateToken, async (req, res) => {
       risk_assessment_id,
       swms_id,
       recurring_type,
+      recurring_weekdays,
       status,
       incomplete_reason
     } = req.body;
